@@ -1,0 +1,21 @@
+# Fichiers IDE
+.idea/
+
+# Environnements virtuels
+.venv/
+
+assets/
+backup/
+help/
+
+arborescence.md
+
+# Fichiers compilés Python
+__pycache__/
+
+administrator/migrations/
+floorproject/floorproject/static/css/
+floorproject/floorproject/static/fontawesome/
+floorproject/floorproject/static/js/
+floorproject/floorproject/static/plans/plan-etage1.png
+floorproject/floorproject/static/plans/plan-etage2.png

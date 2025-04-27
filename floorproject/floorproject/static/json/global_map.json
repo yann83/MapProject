@@ -1,0 +1,54 @@
+{
+  "setView": {
+    "lat": 43.125478,
+    "lng": 5.940961,
+    "zoom": 18
+  },
+  "icons": {
+    "icon_assmal": {
+      "iconUrl": "marker-assmaladie.png",
+      "shadowUrl": "",
+      "iconSize": [],
+      "iconAnchor": [
+        15,
+        32
+      ],
+      "popupAnchor": [],
+      "shadowSize": []
+    }
+  },
+  "markers": {
+    "manager1": {
+      "type": "marker",
+      "coordinates": [
+        43.12592018679758,
+        5.94324365269131
+      ],
+      "popup": "bureau manager1",
+      "icon": "icon_assmal"
+    },
+    "zone1": {
+      "type": "polygon",
+      "coordinates": [
+        [
+          43.126072880853755,
+          5.94247654091305
+        ],
+        [
+          43.126080711307914,
+          5.944118052830163
+        ],
+        [
+          43.125356390057625,
+          5.94368889938778
+        ],
+        [
+          43.12529766093172,
+          5.942589193691676
+        ]
+      ],
+      "color": "#00ff9d",
+      "interactive": false
+    }
+  }
+}

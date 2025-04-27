@@ -1,0 +1,227 @@
+<!-- floorproject/administrator/templates/administrator/upload.html -->
+{% extends 'administrator/base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Fichiers{% endblock %}
+
+{% block css %}
+<style>
+    .file-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        margin-bottom: 5px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+    .file-preview {
+        max-width: 50px;
+        max-height: 50px;
+        margin-right: 10px;
+    }
+    .upload-container {
+        padding: 20px;
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .files-container {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .alert {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+    }
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Gestion des Fichiers</h2>
+
+    <!-- Messages d'alerte -->
+    {% if success %}
+    <div class="alert alert-success">{{ success }}</div>
+    {% endif %}
+
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <!-- Formulaire d'upload -->
+    <div class="upload-container">
+        <h4>Téléverser un fichier</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="imageInput" class="form-label">Fichier image (PNG, JPG, JPEG)</label>
+                <input type="file" class="form-control" id="imageInput" name="image" accept=".png,.jpg,.jpeg" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Catégorie</label>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categoryMarker" value="marker" checked>
+                        <label class="form-check-label" for="categoryMarker">Marqueur (prefix: marker-)</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="category" id="categoryPlan" value="plan">
+                        <label class="form-check-label" for="categoryPlan">Plan (prefix: plan-)</label>
+                    </div>
+                </div>
+                <small class="form-text text-muted">
+                    Les marqueurs sont stockés dans /static/markers, les plans dans /static/plans
+                </small>
+            </div>
+            <button type="submit" class="btn btn-primary">Téléverser</button>
+        </form>
+    </div>
+
+    <!-- Liste des fichiers -->
+    <div class="row">
+        <!-- Marqueurs -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Marqueurs ({{ marker_files|length }})</h5>
+                </div>
+                <div class="card-body files-container">
+                    {% if marker_files %}
+                        {% for file in marker_files %}
+                        <div class="file-item" id="marker-{{ forloop.counter }}">
+                            <div class="d-flex align-items-center">
+                                <img src="{% static 'markers/'|add:file %}" alt="{{ file }}" class="file-preview">
+                                <span>{{ file }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-danger delete-btn" data-category="marker" data-filename="{{ file }}">
+                                Supprimer
+                            </button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucun marqueur disponible</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Plans -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Plans ({{ plan_files|length }})</h5>
+                </div>
+                <div class="card-body files-container">
+                    {% if plan_files %}
+                        {% for file in plan_files %}
+                        <div class="file-item" id="plan-{{ forloop.counter }}">
+                            <div class="d-flex align-items-center">
+                                <img src="{% static 'plans/'|add:file %}" alt="{{ file }}" class="file-preview">
+                                <span>{{ file }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-danger delete-btn" data-category="plan" data-filename="{{ file }}">
+                                Supprimer
+                            </button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucun plan disponible</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Fonction pour obtenir le token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Attendre que le DOM soit chargé
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ajouter un gestionnaire d'événements pour tous les boutons de suppression
+        document.querySelectorAll('.delete-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')) {
+                    const category = this.getAttribute('data-category');
+                    const filename = this.getAttribute('data-filename');
+                    const fileItem = this.closest('.file-item');
+
+                    // Créer les données à envoyer
+                    const formData = new FormData();
+                    formData.append('delete', 'true');
+                    formData.append('category', category);
+                    formData.append('filename', filename);
+                    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+                    // Envoyer la requête AJAX
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Supprimer l'élément de la liste
+                            fileItem.remove();
+
+                            // Afficher un message de succès
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert alert-success';
+                            alertDiv.textContent = data.message;
+
+                            const container = document.querySelector('.container');
+                            container.insertBefore(alertDiv, container.firstChild);
+
+                            // Faire disparaître l'alerte après 3 secondes
+                            setTimeout(() => {
+                                alertDiv.style.transition = 'opacity 1s';
+                                alertDiv.style.opacity = '0';
+                                setTimeout(() => alertDiv.remove(), 1000);
+                            }, 3000);
+                        } else {
+                            // Afficher un message d'erreur
+                            alert('Erreur: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        alert('Une erreur est survenue lors de la suppression du fichier.');
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

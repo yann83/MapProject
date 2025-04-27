@@ -1,0 +1,78 @@
+{
+  "bounds": [ [0, 0], [2339, 3309] ],
+  "map": {
+    "minZoom": -5,
+    "zoomDelta": 0.25,
+    "zoomSnap": 0,
+    "layers": "etage1",
+    "xy": [1100, 1600],
+    "z": -2
+  },
+  "icons": {
+    "redicon": {
+        "iconUrl": "marker-icon-2x-red.png",
+        "shadowUrl": "marker-shadow.png",
+        "iconSize": [25, 41],
+        "iconAnchor": [12, 41],
+        "popupAnchor": [1, -34],
+        "shadowSize": [41, 41]
+      }
+  },
+  "plans": {
+    "etage1": {
+      "name": "Etage 1",
+      "image": "plan-etage1.png"
+    },
+    "etage2" : {
+      "name": "Etage 2",
+      "image": "plan-etage2.png"
+    }
+  },
+  "markers": [{
+    "0": {
+      "id": "manager1",
+      "type": "marker",
+      "xy": [1400, 700],
+      "popup": "bureau manager1",
+      "icon": "",
+      "bound" : "etage1"
+    },
+    "1": {
+      "id": "manager2",
+      "type": "marker",
+      "xy": [800, 400],
+      "popup": "bureau manager2",
+      "icon": "redicon",
+      "bound" : "etage1"
+    },
+    "3": {
+      "id": "agent1",
+      "type": "marker",
+      "xy": [800, 1300],
+      "popup": "bureau agent referent 1",
+      "icon": "",
+      "bound" : "etage1"
+    },
+    "4": {
+      "id": "zone1",
+      "type":"polygon",
+      "xy": [
+        [43.126072880853755, 5.94247654091305],
+        [43.126080711307914, 5.944118052830163],
+        [43.125356390057625, 5.94368889938778],
+        [43.12529766093172, 5.942589193691676]
+      ],
+      "popup": "Espace télétrans.",
+      "icon": "",
+      "bound" : "etage1"
+    },
+    "5": {
+      "id": "managerfsa",
+      "type": "marker",
+      "xy": [1000, 2300],
+      "popup": "Manager FSA<br/><img src='https://www.euroguidance-france.org/wp-content/uploads/2017/09/salarie.png' alt='maptime logo gif' width='100px'/>",
+      "icon": "redicon",
+      "bound" : "etage2"
+    }
+  }]
+}

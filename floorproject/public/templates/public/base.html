@@ -1,0 +1,103 @@
+<!-- floorproject/public/templates/public/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Website{% endblock %}</title>
+          <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <!-- LeafLet CSS -->
+        <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
+        <!-- LeafLet JS apres Leaflet CSS -->
+        <script src="{% static 'js/leaflet.js' %}"></script>
+
+        {% block css %}{% endblock %}
+</head>
+<body>
+    <!-- Menu de gauche -->
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+
+            <div class="col-auto col-md-3 col-xl-1 px-sm-2 px-0 bg-dark">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <span class="fs-5 d-none d-sm-inline">Menu</span>
+                    </a>
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <a href="{% url 'index' %}" class="nav-link align-middle px-0 text-white text-decoration-none">
+                                <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white text-decoration-none">
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Cartographie</span> </a>
+                            <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
+                                <li class="w-100">
+                                    <a href="{% url 'cartes' %}" class="nav-link px-0 text-white text-decoration-none"> <span class="d-none d-sm-inline">Carte</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'plans' %}" class="nav-link px-0 text-white text-decoration-none"> <span class="d-none d-sm-inline">Plans</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link px-0 align-middle text-white text-decoration-none">
+                                <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Informations</span> </a>
+                        </li>
+                    </ul>
+                    <hr>
+                    <div class="dropdown pb-4">
+                        {% if user.is_authenticated %}
+                            <!-- Si l'utilisateur est connecté, afficher le menu Profile avec sous-menus -->
+                            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="d-none d-sm-inline mx-1">{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-primary text-small shadow" aria-labelledby="dropdownUser1">
+                                <li><a class="dropdown-item" href="{% url 'administrator-index' %}">Paramètres</a></li>
+                                <li><a class="dropdown-item" href="{% url 'administrator-edit-user' user.id %}">Mon profil</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" id="logout-form" style="display: inline;">
+                                        {% csrf_token %}
+                                        <a href="#" class="dropdown-item" onclick="document.getElementById('logout-form').submit(); return false;">Déconnexion</a>
+                                    </form>
+                                </li>
+                            </ul>
+                        {% else %}
+                            <!-- Si l'utilisateur n'est pas connecté, afficher uniquement le lien de connexion -->
+                            <a href="{% url 'login' %}" class="d-flex align-items-center text-white text-decoration-none">
+                                <span class="d-none d-sm-inline mx-1">Connexion</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- Centre -->
+            <div class=" my-5 text-center">
+                {% if messages %}
+                    <div class="container mt-3">
+                        {% for message in messages %}
+                        <div class="alert {{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <!-- Main Content -->
+                <main>
+                    {% block content %}
+                    <!-- Le contenu spécifique de chaque page ira ici -->
+                    {% endblock %}
+                </main>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% block script %}{% endblock %}
+ <!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

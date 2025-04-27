@@ -1,0 +1,118 @@
+<!-- floorproject/public/templates/public/cartes.html -->
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    .leaflet-container {
+        height: 400px;
+        width: 600px;
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2>Les plans</h2>
+<p>tous les plans</p>
+<div id="map" style="width: 1000px; height: 600px;" class="container px-5 leaflet-container"></div>
+{% endblock %}
+{% block script %}
+<script>
+    // Définir les chemins statiques
+    const STATIC_URL_IMG = "{% static 'markers/' %}";
+    const STATIC_URL_MARKERS = "{% static 'markers/' %}";
+    const STATIC_URL_JSON = "{% static 'json/' %}";
+
+    // Charger le fichier JSON de configuration
+    fetch(STATIC_URL_JSON + "global_map.json")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Données JSON chargées:", data);
+
+            // Initialiser les icônes personnalisées
+            const icons = {};
+            if (data.icons) {
+                // Parcourir les icônes définies dans le JSON
+                Object.entries(data.icons).forEach(([iconName, iconConfig]) => {
+                    const iconUrl = iconConfig.iconUrl.startsWith('marker-') ?
+                        STATIC_URL_MARKERS + iconConfig.iconUrl :
+                        STATIC_URL_IMG + iconConfig.iconUrl;
+                    const shadowUrl = iconConfig.shadowUrl ?
+                        (iconConfig.shadowUrl.startsWith('marker-') ?
+                            STATIC_URL_MARKERS + iconConfig.shadowUrl :
+                            STATIC_URL_IMG + iconConfig.shadowUrl) :
+                        '';
+
+                    icons[iconName] = L.icon({
+                        iconUrl: iconUrl,
+                        shadowUrl: shadowUrl,
+                        iconSize: iconConfig.iconSize.length ? iconConfig.iconSize : [25, 41],
+                        iconAnchor: iconConfig.iconAnchor || [12, 41],
+                        popupAnchor: iconConfig.popupAnchor.length ? iconConfig.popupAnchor : [1, -34],
+                        shadowSize: iconConfig.shadowSize.length ? iconConfig.shadowSize : [41, 41]
+                    });
+                });
+            }
+            console.log("Initialisation de la carte...");
+            // Initialiser la carte
+            const map = L.map('map').setView(
+                [data.setView.lat, data.setView.lng],
+                data.setView.zoom
+            );
+            console.log("Carte initialisée avec:", data.setView);
+
+            console.log("Ajout des tuiles OpenStreetMap...");
+            // Ajouter les tuiles OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            console.log("Tuiles ajoutées");
+
+            // Ajouter les marqueurs et autres éléments
+            if (data.markers) {
+                Object.entries(data.markers).forEach(([markerId, marker]) => {
+                    if (marker.type === "marker") {
+                        const markerOptions = {};
+                        if (marker.icon && icons[marker.icon]) {
+                            markerOptions.icon = icons[marker.icon];
+                        }
+
+                        L.marker(marker.coordinates, markerOptions)
+                            .bindPopup(marker.popup)
+                            .addTo(map);
+
+                    } else if (marker.type === "polygon") {
+                        const polygonOptions = {
+                            color: marker.color || '#3388ff',
+                            fillOpacity: 0.5,
+                            interactive: marker.interactive !== false
+                        };
+
+                        L.polygon(marker.coordinates, polygonOptions)
+                            .bindPopup(marker.popup || '')
+                            .addTo(map);
+                    }
+                });
+            }
+
+            // Événement de clic pour obtenir les coordonnées (utile pour le développement)
+            map.on('click', function(e) {
+                console.log(e.latlng);  // Affiche la latitude et longitude exactes
+                console.log('[' + e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6) + ']');
+            });
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement du JSON:", error);
+            document.getElementById("map").innerHTML =
+                "<div class='alert alert-danger'>Erreur de chargement de la carte. Consultez la console pour plus de détails.</div>";
+        });
+</script>
+{% endblock %}

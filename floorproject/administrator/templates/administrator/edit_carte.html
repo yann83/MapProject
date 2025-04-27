@@ -1,0 +1,935 @@
+<!-- floorproject/administrator/templates/administrator/edit_carte.html -->
+{% extends 'administrator/base.html' %}
+{% load static %}
+
+{% block title %}Édition de la Carte{% endblock %}
+
+{% block css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    .leaflet-container {
+        height: 400px;
+        width: 600px;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .edit-panel {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .tab-pane {
+        padding: 15px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .icon-preview {
+        width: 40px;
+        height: 40px;
+    }
+    .list-group-item {
+        cursor: pointer;
+    }
+    .list-group-item:hover {
+        background-color: #f5f5f5;
+    }
+    .active-item {
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Édition de la Carte</h2>
+    
+    <!-- Carte pour visualiser et interagir -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+          <div id="map" style="width: 50%; height: 500px;" class="leaflet-container"></div>
+      </div>
+    </div>
+        
+    <!-- Panel d'édition -->
+    <div class="row mb-4" style="width: 50%; height: 500px;">
+      <div class="col-md-12">
+        <ul class="nav nav-tabs" id="editionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="setview-tab" data-bs-toggle="tab" data-bs-target="#setview" type="button" role="tab" aria-controls="setview" aria-selected="true">Vue</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="icons-tab" data-bs-toggle="tab" data-bs-target="#icons" type="button" role="tab" aria-controls="icons" aria-selected="false">Icônes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="markers-tab" data-bs-toggle="tab" data-bs-target="#markers" type="button" role="tab" aria-controls="markers" aria-selected="false">Marqueurs</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="editionTabsContent">
+                <!-- Onglet Vue (setView) -->
+                <div class="tab-pane fade show active" id="setview" role="tabpanel" aria-labelledby="setview-tab">
+                    <form id="setViewForm">
+                        <div class="form-group">
+                            <label for="lat">Latitude:</label>
+                            <input type="number" step="0.000001" class="form-control" id="lat" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lng">Longitude:</label>
+                            <input type="number" step="0.000001" class="form-control" id="lng" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="zoom">Zoom:</label>
+                            <input type="number" step="1" min="1" max="20" class="form-control" id="zoom" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" id="useCurrentView" class="btn btn-secondary">Utiliser Vue Actuelle</button>
+                    </form>
+                </div>
+                
+                <!-- Onglet Icônes -->
+                <div class="tab-pane fade" id="icons" role="tabpanel" aria-labelledby="icons-tab">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h4>Liste des Icônes</h4>
+                        <button class="btn btn-sm btn-success" id="newIconBtn">Nouvelle Icône</button>
+                    </div>
+                    
+                    <div class="list-group mb-3" id="iconsList">
+                        <!-- Les icônes seront ajoutées ici dynamiquement -->
+                    </div>
+                    
+                    <form id="iconForm" style="display: none;">
+                        <h5 id="iconFormTitle">Ajouter une Icône</h5>
+                        <div class="form-group">
+                            <label for="iconName">Nom de l'Icône:</label>
+                            <input type="text" class="form-control" id="iconName" required>
+                            <small class="form-text text-muted" id="iconNameFeedback"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="iconUrl">URL de l'Icône:</label>
+                            <select class="form-control" id="iconUrl" required>
+                                <option value="">Sélectionnez une icône...</option>
+                                {% for file in marker_files %}
+                                    <option value="{{ file }}">{{ file }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="shadowUrl">URL de l'Ombre:</label>
+                            <select class="form-control" id="shadowUrl">
+                                <option value="">Aucune ombre</option>
+                                {% for file in marker_files %}
+                                    <option value="{{ file }}">{{ file }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="iconSize">Taille de l'Icône [largeur, hauteur]:</label>
+                            <input type="text" class="form-control" id="iconSize" placeholder="Ex: [25, 41] ou laisser vide pour valeur par défaut">
+                        </div>
+                        <div class="form-group">
+                            <label for="iconAnchor">Ancre de l'Icône [x, y]:</label>
+                            <input type="text" class="form-control" id="iconAnchor" placeholder="Ex: [12, 41] ou laisser vide pour valeur par défaut">
+                        </div>
+                        <div class="form-group">
+                            <label for="popupAnchor">Ancre du Popup [x, y]:</label>
+                            <input type="text" class="form-control" id="popupAnchor" placeholder="Ex: [1, -34] ou laisser vide pour valeur par défaut">
+                        </div>
+                        <div class="form-group">
+                            <label for="shadowSize">Taille de l'Ombre [largeur, hauteur]:</label>
+                            <input type="text" class="form-control" id="shadowSize" placeholder="Ex: [41, 41] ou laisser vide pour valeur par défaut">
+                        </div>
+                        <input type="hidden" id="iconAction" value="create">
+                        <input type="hidden" id="originalIconName" value="">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" id="cancelIconBtn" class="btn btn-secondary">Annuler</button>
+                        <button type="button" id="deleteIconBtn" class="btn btn-danger" style="display: none;">Supprimer</button>
+                    </form>
+                </div>
+                
+                <!-- Onglet Marqueurs -->
+                <div class="tab-pane fade" id="markers" role="tabpanel" aria-labelledby="markers-tab">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h4>Liste des Marqueurs</h4>
+                        <button class="btn btn-sm btn-success" id="newMarkerBtn">Nouveau Marqueur</button>
+                    </div>
+                    
+                    <div class="list-group mb-3" id="markersList">
+                        <!-- Les marqueurs seront ajoutés ici dynamiquement -->
+                    </div>
+                    
+                    <form id="markerForm" style="display: none;">
+                        <h5 id="markerFormTitle">Ajouter un Marqueur</h5>
+                        <div class="form-group">
+                            <label for="markerId">ID du Marqueur:</label>
+                            <input type="text" class="form-control" id="markerId" required>
+                            <small class="form-text text-muted" id="markerIdFeedback"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="markerType">Type:</label>
+                            <select class="form-control" id="markerType" required>
+                                <option value="marker">Marqueur</option>
+                                <option value="polygon">Polygone</option>
+                            </select>
+                        </div>
+                        <div class="form-group marker-field">
+                            <label for="markerCoords">Coordonnées [lat, lng]:</label>
+                            <input type="text" class="form-control" id="markerCoords" placeholder="Ex: [43.12592, 5.94324]" required>
+                        </div>
+                        <div class="form-group polygon-field" style="display: none;">
+                            <label for="polygonCoords">Coordonnées du Polygone [[lat1, lng1], [lat2, lng2], ...]:</label>
+                            <textarea class="form-control" id="polygonCoords" rows="4" placeholder="Ex: [[43.1260, 5.9424], [43.1260, 5.9441], [43.1253, 5.9436], [43.1252, 5.9425]]"></textarea>
+                        </div>
+                        <div class="form-group marker-field">
+                            <label for="markerIcon">Icône:</label>
+                            <select class="form-control" id="markerIcon">
+                                <option value="">Marqueur par défaut</option>
+                                <!-- Les icônes seront ajoutées ici dynamiquement -->
+                            </select>
+                        </div>
+                        <div class="form-group polygon-field" style="display: none;">
+                            <label for="polygonColor">Couleur:</label>
+                            <input type="color" class="form-control" id="polygonColor" value="#ff7800">
+                        </div>
+                        <div class="form-group polygon-field" style="display: none;">
+                            <label for="polygonInteractive">Interactif:</label>
+                            <select class="form-control" id="polygonInteractive">
+                                <option value="true">Oui</option>
+                                <option value="false">Non</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="markerPopup">Texte du Popup:</label>
+                            <textarea class="form-control" id="markerPopup" rows="2"></textarea>
+                        </div>
+                        <input type="hidden" id="markerAction" value="create">
+                        <input type="hidden" id="originalMarkerId" value="">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" id="cancelMarkerBtn" class="btn btn-secondary">Annuler</button>
+                        <button type="button" id="deleteMarkerBtn" class="btn btn-danger" style="display: none;">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    // Stocker les données JSON chargées depuis le serveur
+    const mapData = {{ map_data|safe }};
+    
+    // Définir les chemins statiques
+    const STATIC_URL_IMG = "{% static 'markers/' %}";
+    const STATIC_URL_JSON = "{% static 'json/' %}";
+    
+    // Variables globales
+    let map;
+    let currentMarkers = {};
+    let currentPolygons = {};
+    let iconsList = {};
+    let drawingPolygon = false;
+    let polygonPoints = [];
+    let tempPolygon = null;
+    
+    // Initialiser la carte
+    function initMap() {
+        // Créer la carte avec les coordonnées de setView
+        map = L.map('map').setView(
+            [mapData.setView.lat, mapData.setView.lng],
+            mapData.setView.zoom
+        );
+        
+        // Ajouter les tuiles OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Initialiser les icônes personnalisées
+        if (mapData.icons) {
+            iconsList = mapData.icons;
+            
+            // Mettre à jour la liste des icônes dans l'interface
+            updateIconsList();
+            updateIconsDropdown();
+        }
+        
+        // Ajouter les marqueurs et autres éléments à la carte
+        if (mapData.markers) {
+            for (const [markerId, marker] of Object.entries(mapData.markers)) {
+                addMarkerToMap(markerId, marker);
+            }
+        }
+        
+        // Événement de clic pour obtenir les coordonnées
+        map.on('click', function(e) {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+            console.log(`[${lat}, ${lng}]`);
+            
+            // Si on est en train de dessiner un polygone, ajouter le point
+            if (drawingPolygon) {
+                polygonPoints.push([parseFloat(lat), parseFloat(lng)]);
+                
+                // Mettre à jour le polygone temporaire
+                if (tempPolygon) {
+                    map.removeLayer(tempPolygon);
+                }
+                
+                if (polygonPoints.length > 2) {
+                    tempPolygon = L.polygon(polygonPoints, { color: '#ff7800' }).addTo(map);
+                } else if (polygonPoints.length === 2) {
+                    tempPolygon = L.polyline(polygonPoints, { color: '#ff7800' }).addTo(map);
+                }
+                
+                // Mettre à jour le champ de texte des coordonnées
+                document.getElementById('polygonCoords').value = JSON.stringify(polygonPoints);
+            }
+        });
+    }
+    
+    // Ajouter un marqueur ou polygone à la carte
+    function addMarkerToMap(markerId, markerData) {
+        if (markerData.type === "marker") {
+            const markerOptions = {};
+            
+            // Si une icône est spécifiée et existe dans notre liste d'icônes
+            if (markerData.icon && iconsList[markerData.icon]) {
+                const iconConfig = iconsList[markerData.icon];
+                markerOptions.icon = L.icon({
+                    iconUrl: STATIC_URL_IMG + iconConfig.iconUrl,
+                    shadowUrl: iconConfig.shadowUrl ? STATIC_URL_IMG + iconConfig.shadowUrl : '',
+                    iconSize: iconConfig.iconSize || [25, 41],
+                    iconAnchor: iconConfig.iconAnchor || [12, 41],
+                    popupAnchor: iconConfig.popupAnchor || [1, -34],
+                    shadowSize: iconConfig.shadowSize || [41, 41]
+                });
+            }
+            
+            // Créer et ajouter le marqueur à la carte
+            const marker = L.marker(markerData.coordinates, markerOptions)
+                .bindPopup(markerData.popup || '')
+                .addTo(map);
+            
+            // Stocker le marqueur pour pouvoir le supprimer plus tard
+            currentMarkers[markerId] = marker;
+            
+        } else if (markerData.type === "polygon") {
+            const polygonOptions = {
+                color: markerData.color || '#3388ff',
+                fillOpacity: 0.5,
+                interactive: markerData.interactive !== false
+            };
+            
+            // Créer et ajouter le polygone à la carte
+            const polygon = L.polygon(markerData.coordinates, polygonOptions)
+                .bindPopup(markerData.popup || '')
+                .addTo(map);
+            
+            // Stocker le polygone pour pouvoir le supprimer plus tard
+            currentPolygons[markerId] = polygon;
+        }
+    }
+    
+    // Mettre à jour la liste des icônes dans l'interface
+    function updateIconsList() {
+        const iconsList = document.getElementById('iconsList');
+        iconsList.innerHTML = '';
+        
+        if (mapData.icons) {
+            for (const [iconName, iconConfig] of Object.entries(mapData.icons)) {
+                const listItem = document.createElement('a');
+                listItem.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                listItem.setAttribute('data-icon-name', iconName);
+                
+                // Créer une prévisualisation de l'icône
+                const iconPreview = document.createElement('img');
+                iconPreview.src = STATIC_URL_IMG + iconConfig.iconUrl;
+                iconPreview.className = 'icon-preview me-3';
+                iconPreview.alt = iconName;
+                
+                const textSpan = document.createElement('span');
+                textSpan.textContent = iconName;
+                
+                listItem.appendChild(iconPreview);
+                listItem.appendChild(textSpan);
+                
+                // Ajouter l'événement de clic pour éditer l'icône
+                listItem.addEventListener('click', function() {
+                    editIcon(iconName);
+                });
+                
+                iconsList.appendChild(listItem);
+            }
+        }
+    }
+    
+    // Mettre à jour la liste déroulante des icônes pour les marqueurs
+    function updateIconsDropdown() {
+        const markerIcon = document.getElementById('markerIcon');
+        
+        // Conserver uniquement l'option par défaut
+        while (markerIcon.options.length > 1) {
+            markerIcon.remove(1);
+        }
+        
+        // Ajouter les icônes disponibles
+        if (mapData.icons) {
+            for (const iconName of Object.keys(mapData.icons)) {
+                const option = document.createElement('option');
+                option.value = iconName;
+                option.textContent = iconName;
+                markerIcon.appendChild(option);
+            }
+        }
+    }
+    
+    // Mettre à jour la liste des marqueurs dans l'interface
+    function updateMarkersList() {
+        const markersList = document.getElementById('markersList');
+        markersList.innerHTML = '';
+        
+        if (mapData.markers) {
+            for (const [markerId, markerData] of Object.entries(mapData.markers)) {
+                const listItem = document.createElement('a');
+                listItem.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                listItem.setAttribute('data-marker-id', markerId);
+                
+                // Icône du type (marqueur ou polygone)
+                const typeIcon = document.createElement('i');
+                typeIcon.className = `fas fa-${markerData.type === 'marker' ? 'map-marker-alt' : 'draw-polygon'} me-2`;
+                
+                const textSpan = document.createElement('span');
+                textSpan.innerHTML = `<strong>${markerId}</strong>: ${markerData.popup || 'Sans popup'}`;
+                
+                const typeSpan = document.createElement('small');
+                typeSpan.className = 'badge bg-info text-white';
+                typeSpan.textContent = markerData.type === 'marker' ? 'Marqueur' : 'Polygone';
+                
+                listItem.appendChild(typeIcon);
+                listItem.appendChild(textSpan);
+                listItem.appendChild(typeSpan);
+                
+                // Ajouter l'événement de clic pour éditer le marqueur
+                listItem.addEventListener('click', function() {
+                    editMarker(markerId);
+                });
+                
+                markersList.appendChild(listItem);
+            }
+        }
+    }
+    
+    // Éditer une icône existante
+    function editIcon(iconName) {
+        const iconConfig = mapData.icons[iconName];
+
+        // Mettre à jour le formulaire avec les valeurs actuelles
+        document.getElementById('iconName').value = iconName;
+        document.getElementById('iconUrl').value = iconConfig.iconUrl || '';
+        document.getElementById('shadowUrl').value = iconConfig.shadowUrl || '';
+        document.getElementById('iconSize').value = iconConfig.iconSize ? JSON.stringify(iconConfig.iconSize) : '';
+        document.getElementById('iconAnchor').value = iconConfig.iconAnchor ? JSON.stringify(iconConfig.iconAnchor) : '';
+        document.getElementById('popupAnchor').value = iconConfig.popupAnchor ? JSON.stringify(iconConfig.popupAnchor) : '';
+        document.getElementById('shadowSize').value = iconConfig.shadowSize ? JSON.stringify(iconConfig.shadowSize) : '';
+
+        // Effacer le message de feedback du nom
+        document.getElementById('iconNameFeedback').textContent = '';
+
+        // Changer l'action et afficher le formulaire
+        document.getElementById('iconAction').value = 'update';
+        document.getElementById('originalIconName').value = iconName;
+        document.getElementById('iconFormTitle').textContent = 'Modifier une Icône';
+        document.getElementById('deleteIconBtn').style.display = 'inline-block';
+        document.getElementById('iconForm').style.display = 'block';
+    }
+    
+    // Éditer un marqueur existant
+    function editMarker(markerId) {
+        const markerData = mapData.markers[markerId];
+        
+        // Mettre à jour le formulaire avec les valeurs actuelles
+        document.getElementById('markerId').value = markerId;
+        document.getElementById('markerType').value = markerData.type;
+        
+        // Afficher/masquer les champs appropriés selon le type
+        toggleMarkerFields(markerData.type);
+        
+        if (markerData.type === 'marker') {
+            document.getElementById('markerCoords').value = JSON.stringify(markerData.coordinates);
+            document.getElementById('markerIcon').value = markerData.icon || '';
+        } else if (markerData.type === 'polygon') {
+            document.getElementById('polygonCoords').value = JSON.stringify(markerData.coordinates);
+            document.getElementById('polygonColor').value = markerData.color || '#ff7800';
+            document.getElementById('polygonInteractive').value = markerData.interactive === false ? 'false' : 'true';
+        }
+        
+        document.getElementById('markerPopup').value = markerData.popup || '';
+        
+        // Changer l'action et afficher le formulaire
+        document.getElementById('markerAction').value = 'update';
+        document.getElementById('originalMarkerId').value = markerId;
+        document.getElementById('markerFormTitle').textContent = 'Modifier un Marqueur';
+        document.getElementById('deleteMarkerBtn').style.display = 'inline-block';
+        document.getElementById('markerForm').style.display = 'block';
+    }
+    
+    // Basculer l'affichage des champs selon le type de marqueur
+    function toggleMarkerFields(type) {
+        const markerFields = document.querySelectorAll('.marker-field');
+        const polygonFields = document.querySelectorAll('.polygon-field');
+        
+        if (type === 'marker') {
+            markerFields.forEach(field => field.style.display = 'block');
+            polygonFields.forEach(field => field.style.display = 'none');
+        } else if (type === 'polygon') {
+            markerFields.forEach(field => field.style.display = 'none');
+            polygonFields.forEach(field => field.style.display = 'block');
+        }
+    }
+    
+    // Sauvegarder les modifications sur le serveur
+    async function saveToServer(data) {
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                return true;
+            } else {
+                alert('Erreur lors de la sauvegarde: ' + (result.message || 'Erreur inconnue'));
+                return false;
+            }
+        } catch (error) {
+            alert('Erreur lors de la sauvegarde: ' + error.message);
+            return false;
+        }
+    }
+    
+    // Obtenir la valeur d'un cookie (pour CSRF)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function isIconNameUnique(name, originalName) {
+        // Si c'est une mise à jour et que le nom n'a pas changé, c'est valide
+        if (name === originalName) return true;
+
+        // Vérifier si le nom existe déjà dans les icônes
+        return !(mapData.icons && mapData.icons.hasOwnProperty(name));
+    }
+
+    // Vérifie si l'ID du marqueur est unique
+    function isMarkerIdUnique(id, originalId) {
+        // Si c'est une mise à jour et que l'ID n'a pas changé, c'est valide
+        if (id === originalId) return true;
+
+        // Vérifier si l'ID existe déjà dans les marqueurs
+        return !(mapData.markers && mapData.markers.hasOwnProperty(id));
+    }
+    // Initialiser l'application quand le DOM est chargé
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialiser la carte
+        initMap();
+        
+        // Mettre à jour la liste des marqueurs
+        updateMarkersList();
+        
+        // Remplir le formulaire de setView avec les valeurs actuelles
+        document.getElementById('lat').value = mapData.setView.lat;
+        document.getElementById('lng').value = mapData.setView.lng;
+        document.getElementById('zoom').value = mapData.setView.zoom;
+
+        // Événement pour utiliser la vue actuelle de la carte
+        document.getElementById('useCurrentView').addEventListener('click', function() {
+            const center = map.getCenter();
+            document.getElementById('lat').value = center.lat.toFixed(6);
+            document.getElementById('lng').value = center.lng.toFixed(6);
+            document.getElementById('zoom').value = map.getZoom();
+        });
+
+        // Événement de soumission du formulaire setView
+        document.getElementById('setViewForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const lat = parseFloat(document.getElementById('lat').value);
+            const lng = parseFloat(document.getElementById('lng').value);
+            const zoom = parseInt(document.getElementById('zoom').value);
+
+            // Mettre à jour les données locales
+            mapData.setView = { lat, lng, zoom };
+
+            // Envoyer les données au serveur
+            const success = await saveToServer({
+                action: 'update_setview',
+                setView: { lat, lng, zoom }
+            });
+
+            if (success) {
+                // Mettre à jour la carte
+                map.setView([lat, lng], zoom);
+                alert('Vue mise à jour avec succès!');
+            }
+        });
+
+        // Événements pour le formulaire d'icônes
+        document.getElementById('newIconBtn').addEventListener('click', function() {
+            // Réinitialiser le formulaire
+            document.getElementById('iconForm').reset();
+            document.getElementById('iconAction').value = 'create';
+            document.getElementById('originalIconName').value = '';
+            document.getElementById('iconFormTitle').textContent = 'Ajouter une Icône';
+            document.getElementById('deleteIconBtn').style.display = 'none';
+            document.getElementById('iconForm').style.display = 'block';
+        });
+
+        document.getElementById('cancelIconBtn').addEventListener('click', function() {
+            document.getElementById('iconForm').style.display = 'none';
+        });
+
+        document.getElementById('iconForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Récupérer les valeurs du formulaire
+            const iconName = document.getElementById('iconName').value;
+            const iconUrl = document.getElementById('iconUrl').value;
+            const shadowUrl = document.getElementById('shadowUrl').value;
+            const iconSize = document.getElementById('iconSize').value;
+            const iconAnchor = document.getElementById('iconAnchor').value;
+            const popupAnchor = document.getElementById('popupAnchor').value;
+            const shadowSize = document.getElementById('shadowSize').value;
+
+            // Vérifier que le nom est unique
+            const originalIconName = document.getElementById('originalIconName').value;
+            const isUnique = isIconNameUnique(iconName, originalIconName);
+
+            if (!isUnique) {
+                document.getElementById('iconNameFeedback').textContent = 'Ce nom d\'icône existe déjà. Veuillez en choisir un autre.';
+                document.getElementById('iconNameFeedback').style.color = 'red';
+                return;
+            } else {
+                document.getElementById('iconNameFeedback').textContent = '';
+            }
+
+            // Préparer les données de l'icône
+            const iconData = {
+                iconUrl: iconUrl
+            };
+
+            if (shadowUrl) iconData.shadowUrl = shadowUrl;
+            if (iconSize) {
+                try {
+                    iconData.iconSize = JSON.parse(iconSize);
+                } catch (error) {
+                    alert('Format invalide pour la taille de l\'icône. Utilisez le format [largeur, hauteur]');
+                    return;
+                }
+            }
+            if (iconAnchor) {
+                try {
+                    iconData.iconAnchor = JSON.parse(iconAnchor);
+                } catch (error) {
+                    alert('Format invalide pour l\'ancre de l\'icône. Utilisez le format [x, y]');
+                    return;
+                }
+            }
+            if (popupAnchor) {
+                try {
+                    iconData.popupAnchor = JSON.parse(popupAnchor);
+                } catch (error) {
+                    alert('Format invalide pour l\'ancre du popup. Utilisez le format [x, y]');
+                    return;
+                }
+            }
+            if (shadowSize) {
+                try {
+                    iconData.shadowSize = JSON.parse(shadowSize);
+                } catch (error) {
+                    alert('Format invalide pour la taille de l\'ombre. Utilisez le format [largeur, hauteur]');
+                    return;
+                }
+            }
+
+            // Déterminer l'action (création ou mise à jour)
+            const iconAction = document.getElementById('iconAction').value;
+
+            // Mettre à jour les données locales
+            if (!mapData.icons) mapData.icons = {};
+
+            // Si c'est une mise à jour et que le nom a changé, supprimer l'ancienne entrée
+            if (iconAction === 'update' && originalIconName !== iconName) {
+                delete mapData.icons[originalIconName];
+            }
+
+            mapData.icons[iconName] = iconData;
+
+            // Envoyer les données au serveur
+            const success = await saveToServer({
+                action: 'crud_icon',
+                icon_action: iconAction,
+                icon_name: iconName,
+                icon_data: iconData,
+                original_icon_name: originalIconName
+            });
+
+            if (success) {
+                // Mettre à jour l'interface
+                updateIconsList();
+                updateIconsDropdown();
+                document.getElementById('iconForm').style.display = 'none';
+                alert(`Icône ${iconAction === 'create' ? 'ajoutée' : 'mise à jour'} avec succès!`);
+            }
+        });
+
+        // Ajouter une validation en temps réel pour le nom d'icône
+        document.getElementById('iconName').addEventListener('input', function() {
+            const iconName = this.value;
+            const originalIconName = document.getElementById('originalIconName').value;
+            const isUnique = isIconNameUnique(iconName, originalIconName);
+
+            if (!isUnique) {
+                document.getElementById('iconNameFeedback').textContent = 'Ce nom d\'icône existe déjà. Veuillez en choisir un autre.';
+                document.getElementById('iconNameFeedback').style.color = 'red';
+            } else {
+                document.getElementById('iconNameFeedback').textContent = 'Nom d\'icône valide.';
+                document.getElementById('iconNameFeedback').style.color = 'green';
+            }
+        });
+
+        // Ajouter une validation en temps réel pour l'ID du marqueur
+        document.getElementById('markerId').addEventListener('input', function() {
+            const markerId = this.value;
+            const originalMarkerId = document.getElementById('originalMarkerId').value;
+            const isUnique = isMarkerIdUnique(markerId, originalMarkerId);
+            const feedbackElement = document.getElementById('markerIdFeedback');
+
+            if (!isUnique) {
+                feedbackElement.textContent = 'Cet ID de marqueur existe déjà. Veuillez en choisir un autre.';
+                feedbackElement.style.color = 'red';
+            } else {
+                feedbackElement.textContent = 'ID de marqueur valide.';
+                feedbackElement.style.color = 'green';
+            }
+        });
+
+        document.getElementById('deleteIconBtn').addEventListener('click', async function() {
+            const iconName = document.getElementById('originalIconName').value;
+
+            if (confirm(`Êtes-vous sûr de vouloir supprimer l'icône "${iconName}" ?`)) {
+                // Supprimer l'icône des données locales
+                if (mapData.icons && mapData.icons[iconName]) {
+                    delete mapData.icons[iconName];
+                }
+
+                // Envoyer la demande de suppression au serveur
+                const success = await saveToServer({
+                    action: 'crud_icon',
+                    icon_action: 'delete',
+                    icon_name: iconName
+                });
+
+                if (success) {
+                    // Mettre à jour l'interface
+                    updateIconsList();
+                    updateIconsDropdown();
+                    document.getElementById('iconForm').style.display = 'none';
+                    alert('Icône supprimée avec succès!');
+                }
+            }
+        });
+
+        // Événements pour le formulaire de marqueurs
+        document.getElementById('newMarkerBtn').addEventListener('click', function() {
+            // Réinitialiser le formulaire
+            document.getElementById('markerForm').reset();
+            document.getElementById('markerAction').value = 'create';
+            document.getElementById('originalMarkerId').value = '';
+            document.getElementById('markerFormTitle').textContent = 'Ajouter un Marqueur';
+            document.getElementById('deleteMarkerBtn').style.display = 'none';
+            toggleMarkerFields('marker'); // Par défaut, afficher les champs pour un marqueur
+            document.getElementById('markerForm').style.display = 'block';
+        });
+
+        document.getElementById('cancelMarkerBtn').addEventListener('click', function() {
+            document.getElementById('markerForm').style.display = 'none';
+            drawingPolygon = false;
+            polygonPoints = [];
+            if (tempPolygon) {
+                map.removeLayer(tempPolygon);
+                tempPolygon = null;
+            }
+        });
+
+        document.getElementById('markerType').addEventListener('change', function() {
+            toggleMarkerFields(this.value);
+        });
+
+        // Bouton pour activer/désactiver le mode de dessin de polygone
+        document.getElementById('polygonCoords').addEventListener('focus', function() {
+            if (!drawingPolygon) {
+                drawingPolygon = true;
+                polygonPoints = [];
+                alert('Mode dessin de polygone activé. Cliquez sur la carte pour ajouter des points. Cliquez sur le même point pour terminer.');
+            }
+        });
+
+        document.getElementById('markerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Récupérer les valeurs du formulaire
+            const markerId = document.getElementById('markerId').value;
+            const markerType = document.getElementById('markerType').value;
+            const originalMarkerId = document.getElementById('originalMarkerId').value;
+
+            // Vérifier que l'ID est unique
+            if (!isMarkerIdUnique(markerId, originalMarkerId)) {
+                alert('Cet ID de marqueur existe déjà. Veuillez en choisir un autre.');
+                return;
+            }
+
+            // Préparer les données du marqueur
+            const markerData = {
+                type: markerType
+            };
+
+            if (markerType === 'marker') {
+                try {
+                    markerData.coordinates = JSON.parse(document.getElementById('markerCoords').value);
+                } catch (error) {
+                    alert('Format invalide pour les coordonnées. Utilisez le format [lat, lng]');
+                    return;
+                }
+
+                const iconValue = document.getElementById('markerIcon').value;
+                if (iconValue) markerData.icon = iconValue;
+
+            } else if (markerType === 'polygon') {
+                try {
+                    markerData.coordinates = JSON.parse(document.getElementById('polygonCoords').value);
+                } catch (error) {
+                    alert('Format invalide pour les coordonnées du polygone. Utilisez le format [[lat1, lng1], [lat2, lng2], ...]');
+                    return;
+                }
+
+                markerData.color = document.getElementById('polygonColor').value;
+                markerData.interactive = document.getElementById('polygonInteractive').value === 'true';
+            }
+
+            const popupValue = document.getElementById('markerPopup').value;
+            if (popupValue) markerData.popup = popupValue;
+
+            // Déterminer l'action (création ou mise à jour)
+            const markerAction = document.getElementById('markerAction').value;
+
+            // Si c'est une mise à jour, supprimer le marqueur existant de la carte
+            if (markerAction === 'update') {
+                if (currentMarkers[originalMarkerId]) {
+                    map.removeLayer(currentMarkers[originalMarkerId]);
+                    delete currentMarkers[originalMarkerId];
+                }
+                if (currentPolygons[originalMarkerId]) {
+                    map.removeLayer(currentPolygons[originalMarkerId]);
+                    delete currentPolygons[originalMarkerId];
+                }
+            }
+
+            // Mettre à jour les données locales
+            if (!mapData.markers) mapData.markers = {};
+
+            // Si c'est une mise à jour et que l'ID a changé, supprimer l'ancienne entrée
+            if (markerAction === 'update' && originalMarkerId !== markerId) {
+                delete mapData.markers[originalMarkerId];
+            }
+
+            mapData.markers[markerId] = markerData;
+
+            // Ajouter le nouveau marqueur à la carte
+            addMarkerToMap(markerId, markerData);
+
+            // Envoyer les données au serveur
+            const success = await saveToServer({
+                action: 'crud_marker',
+                marker_action: markerAction,
+                marker_id: markerId,
+                marker_data: markerData,
+                original_marker_id: originalMarkerId
+            });
+
+            if (success) {
+                // Mettre à jour l'interface
+                updateMarkersList();
+                document.getElementById('markerForm').style.display = 'none';
+                alert(`Marqueur ${markerAction === 'create' ? 'ajouté' : 'mis à jour'} avec succès!`);
+
+                // Réinitialiser le mode dessin de polygone
+                drawingPolygon = false;
+                polygonPoints = [];
+                if (tempPolygon) {
+                    map.removeLayer(tempPolygon);
+                    tempPolygon = null;
+                }
+            }
+        });
+
+        document.getElementById('deleteMarkerBtn').addEventListener('click', async function() {
+            const markerId = document.getElementById('originalMarkerId').value;
+
+            if (confirm(`Êtes-vous sûr de vouloir supprimer le marqueur "${markerId}" ?`)) {
+                // Supprimer le marqueur de la carte
+                if (currentMarkers[markerId]) {
+                    map.removeLayer(currentMarkers[markerId]);
+                    delete currentMarkers[markerId];
+                }
+                if (currentPolygons[markerId]) {
+                    map.removeLayer(currentPolygons[markerId]);
+                    delete currentPolygons[markerId];
+                }
+
+                // Supprimer le marqueur des données locales
+                if (mapData.markers && mapData.markers[markerId]) {
+                    delete mapData.markers[markerId];
+                }
+
+                // Envoyer la demande de suppression au serveur
+                const success = await saveToServer({
+                    action: 'crud_marker',
+                    marker_action: 'delete',
+                    marker_id: markerId
+                });
+
+                if (success) {
+                    // Mettre à jour l'interface
+                    updateMarkersList();
+                    document.getElementById('markerForm').style.display = 'none';
+                    alert('Marqueur supprimé avec succès!');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

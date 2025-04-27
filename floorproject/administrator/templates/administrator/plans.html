@@ -1,0 +1,103 @@
+<!-- floorproject/administrator/templates/administrator/plans.html -->
+{% extends 'administrator/base.html' %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    .leaflet-container {
+        height: 400px;
+        width: 600px;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    /* Style pour le champ de coordonnées */
+    .coordinates-input {
+        margin-top: 15px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 300px;
+        font-size: 16px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<p>PLANS</p>
+<div id="map" style="width: 1000px; height: 600px;" class="container px-5 leaflet-container"></div>
+
+<!-- Champ pour afficher les coordonnées -->
+<div class="mt-3">
+    <input type="text" id="coordinates" class="coordinates-input" readonly placeholder="Cliquez sur la carte pour afficher les coordonnées" />
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Variable pour stocker le chemin statique de base pour les images
+    const STATIC_URL_PLANS = "{% static 'plans/' %}";
+    const STATIC_URL_JSON = "{% static 'json/' %}";
+
+    // Charger le fichier JSON
+    fetch(STATIC_URL_JSON + "maps.json")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Données JSON chargées:", data);
+
+            // Créer les couches pour les différents étages
+            const layers = {};
+            if (data.plans) {
+                Object.entries(data.plans).forEach(([key, plan]) => {
+                    layers[key] = L.layerGroup();
+                    L.imageOverlay(STATIC_URL_PLANS + plan.image, data.bounds).addTo(layers[key]);
+                });
+            }
+
+            // Initialiser la carte
+            const map = L.map('map', {
+                crs: L.CRS.Simple,
+                minZoom: data.map.minZoom || -5,
+                zoomDelta: data.map.zoomDelta || 0.25,
+                zoomSnap: data.map.zoomSnap || 0,
+                layers: [layers[data.map.layers]]
+            });
+
+            // Configurer la vue
+            map.setView([data.map.xy[0], data.map.xy[1]], data.map.z);
+            map.fitBounds(data.bounds);
+
+            // Ajouter les contrôles de couches
+            const baseMaps = {};
+            Object.entries(data.plans).forEach(([key, plan]) => {
+                baseMaps[plan.name] = layers[key];
+            });
+            L.control.layers(baseMaps).addTo(map);
+
+            // Référence à l'élément input pour les coordonnées
+            const coordinatesInput = document.getElementById('coordinates');
+
+            // Événement de clic pour obtenir les coordonnées
+            map.on('click', function(e) {
+                // Arrondir les coordonnées
+                const lat = Math.round(e.latlng.lat);
+                const lng = Math.round(e.latlng.lng);
+
+                // Afficher dans la console (utile pour le développement)
+                console.log('[' + lat + ', ' + lng + ']');
+
+                // Mettre à jour le champ input avec les coordonnées
+                coordinatesInput.value = '[' + lat + ', ' + lng + ']';
+            });
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement du JSON:", error);
+            document.getElementById("map").innerHTML = "Erreur de chargement de la carte. Consultez la console pour plus de détails.";
+        });
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+<!-- floorproject/administrator/templates/administrator/cartes.html -->
+{% extends 'administrator/base.html' %}
+{% load static %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block css %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    .leaflet-container {
+        height: 400px;
+        width: 600px;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    /* Style pour le champ de coordonnées */
+    .coordinates-input {
+        margin-top: 15px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 300px;
+        font-size: 16px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<p>CARTE.</p>
+<div id="map" style="width: 1000px; height: 600px;" class="container px-5 leaflet-container"></div>
+
+<!-- Champ pour afficher les coordonnées -->
+<div class="mt-3">
+    <input type="text" id="coordinates" class="coordinates-input" readonly placeholder="Cliquez sur la carte pour afficher les coordonnées" />
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Définir les chemins statiques
+    const STATIC_URL_JSON = "{% static 'json/' %}";
+
+    // Charger le fichier JSON de configuration
+    fetch(STATIC_URL_JSON + "global_map.json")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Données JSON chargées:", data);
+
+            console.log("Initialisation de la carte...");
+            // Initialiser la carte
+            const map = L.map('map').setView(
+                [data.setView.lat, data.setView.lng],
+                data.setView.zoom
+            );
+            console.log("Carte initialisée avec:", data.setView);
+
+            console.log("Ajout des tuiles OpenStreetMap...");
+            // Ajouter les tuiles OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            console.log("Tuiles ajoutées");
+
+            // Référence à l'élément input pour les coordonnées
+            const coordinatesInput = document.getElementById('coordinates');
+
+            // Événement de clic pour obtenir les coordonnées (utile pour le développement)
+            map.on('click', function(e) {
+                // Afficher les coordonnées dans la console
+                console.log(e.latlng);  // Affiche la latitude et longitude exactes
+                console.log('[' + e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6) + ']');
+
+                // Mettre à jour le champ input avec les coordonnées
+                coordinatesInput.value = '[' + e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6) + ']';
+            });
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement du JSON:", error);
+            document.getElementById("map").innerHTML =
+                "<div class='alert alert-danger'>Erreur de chargement de la carte. Consultez la console pour plus de détails.</div>";
+        });
+ </script>
+{% endblock %}

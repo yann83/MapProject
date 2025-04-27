@@ -1,0 +1,63 @@
+<!-- administrator/templates/administrator/users.html -->
+{% extends 'administrator/base.html' %}
+
+{% block title %}Gestion des Utilisateurs{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Gestion des Utilisateurs</h2>
+
+    <div class="mb-3">
+        <a href="{% url 'administrator-add-user' %}" class="btn btn-success">Ajouter un nouvel utilisateur</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Liste des utilisateurs</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nom d'utilisateur</th>
+                        <th>Rôle</th>
+                        <th>État</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.role == 'carte' %}
+                                <span class="badge bg-info">Carte</span>
+                            {% elif user.role == 'plan' %}
+                                <span class="badge bg-success">Plan</span>
+                            {% elif user.role == 'admin' %}
+                                <span class="badge bg-dark">Admin</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Actif</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'administrator-edit-user' user.id %}" class="btn btn-sm btn-primary">Modifier</a>
+                            <a href="{% url 'administrator-delete-user' user.id %}" class="btn btn-sm btn-danger">Supprimer</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Aucun utilisateur trouvé</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
