@@ -136,14 +136,14 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Indique à Django d'utiliser notre modèle d'utilisateur personnalisé
+# Tells Django to use our custom user model
 AUTH_USER_MODEL = 'administrator.CustomUser'
 
-# URL de redirection après connexion réussie
+# Redirect URL after successful login
 LOGIN_REDIRECT_URL = '/administrator/'
 
-# URL pour la page de connexion
+# URL for the login page
 LOGIN_URL = '/login/'
 
-# URL de redirection après déconnexion
+# Redirect URL after logout
 LOGOUT_REDIRECT_URL = '/'

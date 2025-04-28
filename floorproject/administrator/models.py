@@ -3,23 +3,23 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
-# Gestionnaire personnalisé pour notre modèle d'utilisateur
+# Custom handler for our user model
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, role='carte'):
-        # Crée et enregistre un utilisateur avec le nom d'utilisateur et mot de passe donnés
+        # Creates and registers a user with the given username and password
         if not username:
-            raise ValueError('Le nom d\'utilisateur est obligatoire')
+            raise ValueError('Username is required')
 
         user = self.model(
             username=username,
             role=role,
         )
-        user.set_password(password)  # Hache le mot de passe
+        user.set_password(password)  # Hash the password
         user.save(using=self._db)
         return user
 
     def create_superuser(self, username, password=None):
-        # Crée et enregistre un superutilisateur
+        # Create and register a superuser
         user = self.create_user(
             username=username,
             password=password,
@@ -32,7 +32,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-# Notre modèle d'utilisateur personnalisé
+# Our custom user model
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
         ('carte', 'Carte'),
@@ -49,7 +49,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'username'  # Champ utilisé pour l'authentification
+    USERNAME_FIELD = 'username'  # Field used for authentication
 
     def __str__(self):
         return self.username

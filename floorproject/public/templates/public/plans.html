@@ -20,48 +20,48 @@
 {% endblock %}
 
 {% block content %}
-<h2>Les plans</h2>
-<p>tous les plans</p>
+<h2>Floors Plans</h2>
+<p>Select a floor</p>
 <div id="map" style="width: 1000px; height: 600px;" class="container px-5 leaflet-container"></div>
 <img src="{% static 'img/profile.jpg' %}">
 {% endblock %}
 {% block script %}
 <script>
-// Variable pour stocker le chemin statique de base pour les images
+// Variable to store the base static path for images
 const STATIC_URL_IMG = "{% static 'img/' %}";
 const STATIC_URL_MARKERS = "{% static 'markers/' %}";
 const STATIC_URL_PLANS = "{% static 'plans/' %}";
 const STATIC_URL_JSON = "{% static 'json/' %}";
 
-// Charger le fichier JSON
+// Load the JSON file
 fetch(STATIC_URL_JSON + "maps.json")
     .then(response => response.json())
     .then(data => {
         console.log("Données JSON chargées:", data);
 
-        // Initialiser les icônes personnalisées
+        // Initialize custom icons
         const icons = {};
         if (data.icons) {
-            // Traitement des icônes dans leur format actuel
+            // Processing icons in their current format
             Object.entries(data.icons).forEach(([iconName, iconConfig]) => {
-                // Déterminer le bon chemin pour l'icône et l'ombre
+                // Determine the correct path for the icon and shadow
                 let iconUrl, shadowUrl;
 
-                // Vérifier si l'iconUrl commence par 'marker-'
+                // Check if the iconUrl starts with 'marker-'
                 if (iconConfig.iconUrl && iconConfig.iconUrl.startsWith('marker-')) {
                     iconUrl = STATIC_URL_MARKERS + iconConfig.iconUrl;
                 } else if (iconConfig.iconUrl) {
                     iconUrl = STATIC_URL_IMG + iconConfig.iconUrl;
                 }
 
-                // Vérifier si shadowUrl commence par 'marker-'
+                // Check if shadowUrl starts with 'marker-'
                 if (iconConfig.shadowUrl && iconConfig.shadowUrl.startsWith('marker-')) {
                     shadowUrl = STATIC_URL_MARKERS + iconConfig.shadowUrl;
                 } else if (iconConfig.shadowUrl) {
                     shadowUrl = STATIC_URL_IMG + iconConfig.shadowUrl;
                 }
 
-                // Créer l'icône
+                // Create the icon
                 icons[iconName] = L.icon({
                     iconUrl: iconUrl,
                     shadowUrl: shadowUrl,
@@ -73,7 +73,7 @@ fetch(STATIC_URL_JSON + "maps.json")
             });
         }
 
-            // Créer les couches pour les différents étages
+            // Create the layers for the different floors
             const layers = {};
             if (data.plans) {
                 Object.entries(data.plans).forEach(([key, plan]) => {
@@ -82,7 +82,7 @@ fetch(STATIC_URL_JSON + "maps.json")
                 });
             }
 
-            // Initialiser la carte
+            // Initialize the card
             const map = L.map('map', {
                 crs: L.CRS.Simple,
                 minZoom: data.map.minZoom || -5,
@@ -91,18 +91,18 @@ fetch(STATIC_URL_JSON + "maps.json")
                 layers: [layers[data.map.layers]]
             });
 
-            // Configurer la vue
+            // Configure the view
             map.setView([data.map.xy[0], data.map.xy[1]], data.map.z);
             map.fitBounds(data.bounds);
 
-            // Ajouter les contrôles de couches
+            // Add Layer Controls
             const baseMaps = {};
             Object.entries(data.plans).forEach(([key, plan]) => {
                 baseMaps[plan.name] = layers[key];
             });
             L.control.layers(baseMaps).addTo(map);
 
-            // Ajouter les marqueurs
+            // Add the markers
             if (data.markers) {
                 Object.values(data.markers).forEach(markerGroup => {
                     Object.entries(markerGroup).forEach(([key, marker]) => {
@@ -129,14 +129,14 @@ fetch(STATIC_URL_JSON + "maps.json")
                 });
             }
 
-            // Événement de clic pour obtenir les coordonnées
+            // Click event to get coordinates
             map.on('click', function(e) {
                 console.log('[' + Math.round(e.latlng.lat) + ', ' + Math.round(e.latlng.lng) + ']');
             });
         })
         .catch(error => {
             console.error("Erreur lors du chargement du JSON:", error);
-            document.getElementById("map").innerHTML = "Erreur de chargement de la carte. Consultez la console pour plus de détails.";
+            document.getElementById("map").innerHTML = "Error loading map. Check the console for details.";
         });
 </script>
 {% endblock %}

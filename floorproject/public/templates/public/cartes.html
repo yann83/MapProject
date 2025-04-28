@@ -20,27 +20,27 @@
 {% endblock %}
 
 {% block content %}
-<h2>Les plans</h2>
-<p>tous les plans</p>
+<h2>Global map</h2>
+<p>Main building</p>
 <div id="map" style="width: 1000px; height: 600px;" class="container px-5 leaflet-container"></div>
 {% endblock %}
 {% block script %}
 <script>
-    // Définir les chemins statiques
+    // Define static paths
     const STATIC_URL_IMG = "{% static 'markers/' %}";
     const STATIC_URL_MARKERS = "{% static 'markers/' %}";
     const STATIC_URL_JSON = "{% static 'json/' %}";
 
-    // Charger le fichier JSON de configuration
+    // Load the configuration JSON file
     fetch(STATIC_URL_JSON + "global_map.json")
         .then(response => response.json())
         .then(data => {
             console.log("Données JSON chargées:", data);
 
-            // Initialiser les icônes personnalisées
+            // Initialize custom icons
             const icons = {};
             if (data.icons) {
-                // Parcourir les icônes définies dans le JSON
+                // Browse the icons defined in the JSON
                 Object.entries(data.icons).forEach(([iconName, iconConfig]) => {
                     const iconUrl = iconConfig.iconUrl.startsWith('marker-') ?
                         STATIC_URL_MARKERS + iconConfig.iconUrl :
@@ -62,7 +62,7 @@
                 });
             }
             console.log("Initialisation de la carte...");
-            // Initialiser la carte
+            // Initialize the card
             const map = L.map('map').setView(
                 [data.setView.lat, data.setView.lng],
                 data.setView.zoom
@@ -70,13 +70,13 @@
             console.log("Carte initialisée avec:", data.setView);
 
             console.log("Ajout des tuiles OpenStreetMap...");
-            // Ajouter les tuiles OpenStreetMap
+            // Add OpenStreetMap tiles
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
             console.log("Tuiles ajoutées");
 
-            // Ajouter les marqueurs et autres éléments
+            // Add markers and other elements
             if (data.markers) {
                 Object.entries(data.markers).forEach(([markerId, marker]) => {
                     if (marker.type === "marker") {
@@ -103,7 +103,7 @@
                 });
             }
 
-            // Événement de clic pour obtenir les coordonnées (utile pour le développement)
+            // Click event to get coordinates (useful for development)
             map.on('click', function(e) {
                 console.log(e.latlng);  // Affiche la latitude et longitude exactes
                 console.log('[' + e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6) + ']');
@@ -112,7 +112,7 @@
         .catch(error => {
             console.error("Erreur lors du chargement du JSON:", error);
             document.getElementById("map").innerHTML =
-                "<div class='alert alert-danger'>Erreur de chargement de la carte. Consultez la console pour plus de détails.</div>";
+                "<div class='alert alert-danger'>Error loading map. Check the console for details.</div>";
         });
 </script>
 {% endblock %}

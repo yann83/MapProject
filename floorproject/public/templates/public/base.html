@@ -32,45 +32,44 @@
                         </li>
                         <li>
                             <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle text-white text-decoration-none">
-                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Cartographie</span> </a>
+                                <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Maps</span> </a>
                             <ul class="collapse nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                 <li class="w-100">
-                                    <a href="{% url 'cartes' %}" class="nav-link px-0 text-white text-decoration-none"> <span class="d-none d-sm-inline">Carte</a>
+                                    <a href="{% url 'cartes' %}" class="nav-link px-0 text-white text-decoration-none"> <span class="d-none d-sm-inline">Global Map</a>
                                 </li>
                                 <li>
-                                    <a href="{% url 'plans' %}" class="nav-link px-0 text-white text-decoration-none"> <span class="d-none d-sm-inline">Plans</a>
+                                    <a href="{% url 'plans' %}" class="nav-link px-0 text-white text-decoration-none"> <span class="d-none d-sm-inline">Floors plans</a>
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <!--<li>
                             <a href="#" class="nav-link px-0 align-middle text-white text-decoration-none">
                                 <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Informations</span> </a>
-                        </li>
+                        </li>-->
                     </ul>
                     <hr>
                     <div class="dropdown pb-4">
                         {% if user.is_authenticated %}
-                            <!-- Si l'utilisateur est connecté, afficher le menu Profile avec sous-menus -->
+                            <!-- If the user is logged in, display the Profile menu with submenus -->
                             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="d-none d-sm-inline mx-1">{{ user.username }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-primary text-small shadow" aria-labelledby="dropdownUser1">
-                                <li><a class="dropdown-item" href="{% url 'administrator-index' %}">Paramètres</a></li>
-                                <li><a class="dropdown-item" href="{% url 'administrator-edit-user' user.id %}">Mon profil</a></li>
+                                <li><a class="dropdown-item" href="{% url 'administrator-edit-user' user.id %}">Profil</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
                                     <form method="post" action="{% url 'logout' %}" id="logout-form" style="display: inline;">
                                         {% csrf_token %}
-                                        <a href="#" class="dropdown-item" onclick="document.getElementById('logout-form').submit(); return false;">Déconnexion</a>
+                                        <a href="#" class="dropdown-item" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
                                     </form>
                                 </li>
                             </ul>
                         {% else %}
-                            <!-- Si l'utilisateur n'est pas connecté, afficher uniquement le lien de connexion -->
+                            <!-- If the user is not logged in, only show the login link -->
                             <a href="{% url 'login' %}" class="d-flex align-items-center text-white text-decoration-none">
-                                <span class="d-none d-sm-inline mx-1">Connexion</span>
+                                <span class="d-none d-sm-inline mx-1">Login</span>
                             </a>
                         {% endif %}
                     </div>
@@ -90,7 +89,7 @@
                 <!-- Main Content -->
                 <main>
                     {% block content %}
-                    <!-- Le contenu spécifique de chaque page ira ici -->
+                    <!-- The specific content of each page will go here -->
                     {% endblock %}
                 </main>
             </div>
@@ -99,5 +98,4 @@
 </body>
 </html>
 {% block script %}{% endblock %}
- <!-- Option 1: Bootstrap Bundle with Popper -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>

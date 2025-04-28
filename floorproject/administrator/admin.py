@@ -5,11 +5,11 @@ from .models import CustomUser
 from .forms import UserCreationForm, UserChangeForm
 
 class UserAdmin(BaseUserAdmin):
-    # Les formulaires pour ajouter et modifier des instances d'utilisateur
+    # Forms for adding and editing user instances
     form = UserChangeForm
     add_form = UserCreationForm
 
-    # Les champs à afficher dans l'interface d'administration
+    # Fields to display in the administration interface
     list_display = ('username', 'role', 'is_admin', 'is_active')
     list_filter = ('is_admin', 'role')
     fieldsets = (
@@ -17,7 +17,7 @@ class UserAdmin(BaseUserAdmin):
         ('Rôle', {'fields': ('role',)}),
         ('Permissions', {'fields': ('is_active', 'is_admin', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
-    # Ajoute seulement ces champs lors de la création d'un utilisateur
+    # Only add these fields when creating a user
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -28,5 +28,5 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions',)
 
-# Enregistre le modèle d'utilisateur personnalisé avec l'admin Django
+# Register the custom user model with the Django admin
 admin.site.register(CustomUser, UserAdmin)

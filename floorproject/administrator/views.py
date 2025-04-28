@@ -7,7 +7,7 @@ import json
 import os
 from django.conf import settings
 from django.http import JsonResponse
-from .decorators import role_required  # Importez le décorateur
+from .decorators import role_required  # Import the decorator
 
 def administrator_index(request):
     return render(request, 'administrator/index.html')
@@ -18,17 +18,17 @@ def administrator_cartes(request):
 def administrator_plans(request):
     return render(request, 'administrator/plans.html')
 
-# Fonction pour afficher la liste des utilisateurs
+# Function to display the list of users
 @login_required
 @role_required(['admin'])
 def administrator_users(request):
-    # Récupérer tous les utilisateurs
+    # Recover all users
     users = CustomUser.objects.all()
     return render(request, 'administrator/users.html', {'users': users})
 
-# Fonction pour ajouter un nouvel utilisateur
+# Function to add a new user
 @login_required
-@role_required(['admin'])  # Seul l'admin peut ajouter des utilisateurs
+@role_required(['admin'])  # Only admin can add users
 def administrator_add_user(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -40,12 +40,12 @@ def administrator_add_user(request):
     return render(request, 'administrator/user_form.html', {'form': form, 'action': 'Ajouter'})
 
 
-# Fonction pour modifier un utilisateur existant
+# Function to modify an existing user
 @login_required
-@role_required(['admin'])  # Seul l'admin peut modifier des utilisateurs
+@role_required(['admin'])  # Only admin can add users
 def administrator_edit_user(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
-    # Autoriser les utilisateurs à modifier leur propre profil
+    # Allow users to edit their own profile
     if request.user.id != user.id and request.user.role != 'admin':
         messages.error(request, "Vous ne pouvez pas modifier cet utilisateur.")
         return redirect('administrator-users')
@@ -59,9 +59,9 @@ def administrator_edit_user(request, user_id):
         form = UserChangeForm(instance=user)
     return render(request, 'administrator/user_form.html', {'form': form, 'action': 'Modifier'})
 
-# Fonction pour supprimer un utilisateur
+# Function to delete a user
 @login_required
-@role_required(['admin'])  # Seul l'admin peut supprimer des utilisateurs
+@role_required(['admin'])  # Only admin can delete users
 def administrator_delete_user(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
     if request.method == 'POST':
@@ -69,17 +69,17 @@ def administrator_delete_user(request, user_id):
         return redirect('administrator-users')
     return render(request, 'administrator/delete_user.html', {'user': user})
 
-# Nouvelle vue pour l'édition de la carte globale
+# New view for editing the global map
 @login_required
 @role_required(['admin', 'carte'])
 def administrator_edit_carte(request):
-    # Chemin vers le fichier JSON
+    # Path to the JSON file
     json_file_path = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'json', 'global_map.json')
 
-    # Si c'est une requête POST, nous mettons à jour le fichier JSON
+    # If it is a POST request, we update the JSON file
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
-            # Récupérer les données JSON envoyées par la requête AJAX
+            # Retrieve JSON data sent by AJAX request
             data = json.loads(request.body)
             action = data.get('action')
 
@@ -87,7 +87,7 @@ def administrator_edit_carte(request):
             with open(json_file_path, 'r') as file:
                 map_data = json.load(file)
 
-            # Traiter l'action demandée
+            # Process the requested action
             if action == 'update_setview':
                 map_data['setView'] = data.get('setView')
             elif action == 'crud_icon':
@@ -113,7 +113,7 @@ def administrator_edit_carte(request):
                     if 'markers' in map_data and marker_id in map_data['markers']:
                         del map_data['markers'][marker_id]
 
-            # Écrire les données mises à jour dans le fichier JSON
+            # Write updated data to JSON file
             with open(json_file_path, 'w') as file:
                 json.dump(map_data, file, indent=2)
 
@@ -122,52 +122,52 @@ def administrator_edit_carte(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
-        # Pour une requête GET, nous chargeons les données actuelles du JSON
+        # For a GET request, we load the current data from the JSON
     try:
         json_file_path = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'json', 'global_map.json')
         with open(json_file_path, 'r') as file:
             map_data = json.load(file)
     except:
-        # Si le fichier n'existe pas ou est invalide, nous créons un modèle de base
+        # If the file does not exist or is invalid, we create a base template
         map_data = {
             "setView": {"lat": 43.12568, "lng": 5.94334, "zoom": 18},
             "icons": {},
             "markers": {}
         }
 
-        # Récupérer la liste des fichiers d'images de marqueurs
+        # Retrieve the list of marker image files
     markers_dir = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'markers')
     marker_files = []
     if os.path.exists(markers_dir):
         marker_files = [f for f in os.listdir(markers_dir) if
                         f.startswith('marker-') and f.endswith(('.png', '.jpg', '.jpeg'))]
 
-    # Rendu du template avec les données
+    # Rendering the template with the data
     return render(request, 'administrator/edit_carte.html', {
         'map_data': json.dumps(map_data),
         'marker_files': marker_files
     })
 
 
-# Nouvelle vue pour l'édition des plans
+# New view for editing plans
 @login_required
 @role_required(['admin', 'plan'])
 def administrator_edit_plans(request):
-    # Chemin vers le fichier JSON
+    # Path to the JSON file
     json_file_path = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'json', 'maps.json')
 
     # Si c'est une requête POST, nous mettons à jour le fichier JSON
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
-            # Récupérer les données JSON envoyées par la requête AJAX
+            # If it is a POST request, we update the JSON file
             data = json.loads(request.body)
             action = data.get('action')
 
-            # Lire le fichier JSON existant
+            # Read existing JSON file
             with open(json_file_path, 'r') as file:
                 map_data = json.load(file)
 
-            # Traiter l'action demandée
+            # Process the requested action
             if action == 'update_bounds_map':
                 map_data['bounds'] = data.get('bounds')
                 map_data['map'] = data.get('map')
@@ -190,7 +190,7 @@ def administrator_edit_plans(request):
                     if 'markers' not in map_data:
                         map_data['markers'] = []
 
-                    # Vérifier si le marqueur existe déjà pour le mettre à jour
+                    # If this is a new marker or it was not found for update
                     updated = False
                     if marker_action == 'update':
                         for i, marker_group in enumerate(map_data['markers']):
@@ -199,18 +199,18 @@ def administrator_edit_plans(request):
                                 updated = True
                                 break
 
-                    # Si c'est un nouveau marqueur ou qu'il n'a pas été trouvé pour mise à jour
+                    # If this is a new marker or it was not found for update
                     if not updated:
-                        # Créer un nouvel objet pour ce marqueur
+                        # Create a new object for this marker
                         new_marker = {marker_id: data.get('marker_data')}
                         map_data['markers'].append(new_marker)
 
                 elif marker_action == 'delete':
-                    # Trouver et supprimer le marqueur
+                    # Find and delete the marker
                     for i, marker_group in enumerate(map_data['markers']):
                         if marker_id in marker_group:
                             del map_data['markers'][i][marker_id]
-                            # Si le groupe est vide, le supprimer
+                            # If the group is empty, delete it
                             if not map_data['markers'][i]:
                                 map_data['markers'].pop(i)
                             break
@@ -226,7 +226,7 @@ def administrator_edit_plans(request):
                     if 'plans' in map_data and plan_id in map_data['plans']:
                         del map_data['plans'][plan_id]
                 elif plan_action == 'reorder':
-                    # Réordonner les plans
+                    # Reorder the plans
                     new_order = data.get('new_order')
                     if new_order and 'plans' in map_data:
                         ordered_plans = {}
@@ -235,7 +235,7 @@ def administrator_edit_plans(request):
                                 ordered_plans[plan_id] = map_data['plans'][plan_id]
                         map_data['plans'] = ordered_plans
 
-            # Écrire les données mises à jour dans le fichier JSON
+            # Write updated data to JSON file
             with open(json_file_path, 'w') as file:
                 json.dump(map_data, file, indent=2)
 
@@ -244,12 +244,12 @@ def administrator_edit_plans(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
 
-    # Pour une requête GET, nous chargeons simplement les données actuelles du JSON
+    # For a GET request, we simply load the current data from the JSON
     try:
         with open(json_file_path, 'r') as file:
             map_data = json.load(file)
     except:
-        # Si le fichier n'existe pas ou est invalide, nous créons un modèle de base
+        # If the file does not exist or is invalid, we create a base template
         map_data = {
             "bounds": [[0, 0], [2339, 3309]],
             "map": {
@@ -265,24 +265,24 @@ def administrator_edit_plans(request):
             "markers": []
         }
 
-    # Récupérer la liste des fichiers d'images dans le dossier plans
+    # Retrieve the list of image files in the plans folder
     plans_dir = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'plans')
     plan_files = []
     if os.path.exists(plans_dir):
         plan_files = [f for f in os.listdir(plans_dir) if f.endswith(('.png', '.jpg', '.jpeg'))]
 
-    # Récupérer la liste des fichiers d'images de marqueurs
+    # Retrieve the list of marker image files
     markers_dir = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'markers')
     marker_files = []
     if os.path.exists(markers_dir):
         marker_files = [f for f in os.listdir(markers_dir) if
                         f.startswith('marker-') and f.endswith(('.png', '.jpg', '.jpeg'))]
 
-    # Rendu du template avec les données
+    # Rendering the template with the data
     return render(request, 'administrator/edit_plans.html', {
         'map_data': json.dumps(map_data),
         'plan_files': plan_files,
-        'marker_files': marker_files  # Ajout des fichiers de marqueurs
+        'marker_files': marker_files  # Adding marker files
     })
 
 
@@ -290,20 +290,20 @@ def administrator_edit_plans(request):
 @role_required(['admin'])
 def administrator_upload(request):
     """
-    Vue pour gérer l'upload et la suppression des fichiers.
-    Permet de téléverser des images avec préfixe selon la catégorie :
-    - 'marker-' pour les images de marqueurs (stockées dans /static/markers)
-    - 'plan-' pour les plans d'étage (stockées dans /static/plans)
+    View to manage file uploads and deletions.
+    Allows you to upload images with a prefix based on category:
+    - 'marker-' for marker images (stored in /static/markers)
+    - 'plan-' for floor plans (stored in /static/plans)
     """
-    # Initialiser les listes pour stocker les fichiers existants
+    # Initialize lists to store existing files
     marker_files = []
     plan_files = []
 
-    # Récupérer les chemins des dossiers
+    # Retrieve folder paths
     img_dir = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'markers')
     plans_dir = os.path.join(settings.BASE_DIR, 'floorproject', 'static', 'plans')
 
-    # Récupérer la liste des fichiers existants
+    # Retrieve the list of existing files
     if os.path.exists(img_dir):
         marker_files = [f for f in os.listdir(img_dir) if
                         f.startswith('marker-') and f.endswith(('.png', '.jpg', '.jpeg'))]
@@ -312,9 +312,9 @@ def administrator_upload(request):
         plan_files = [f for f in os.listdir(plans_dir) if
                       f.startswith('plan-') and f.endswith(('.png', '.jpg', '.jpeg'))]
 
-    # Traitement des requêtes POST (upload et suppression)
+    # Processing POST requests (upload and delete)
     if request.method == 'POST':
-        # Si c'est une requête AJAX pour la suppression
+        # If it is an AJAX request for deletion
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and 'delete' in request.POST:
             try:
                 filename = request.POST.get('filename')
@@ -322,10 +322,10 @@ def administrator_upload(request):
 
                 if category == 'marker':
                     file_path = os.path.join(img_dir, filename)
-                else:  # plan
+                else:  # floor plan
                     file_path = os.path.join(plans_dir, filename)
 
-                # Vérifier si le fichier existe avant de le supprimer
+                # Check if the file exists before deleting it
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     return JsonResponse({'status': 'success', 'message': f'Fichier {filename} supprimé avec succès.'})
@@ -335,13 +335,13 @@ def administrator_upload(request):
             except Exception as e:
                 return JsonResponse({'status': 'error', 'message': str(e)})
 
-        # Si c'est une requête d'upload normal
+        # If it is a normal upload request
         elif 'image' in request.FILES:
             try:
                 uploaded_file = request.FILES['image']
                 category = request.POST.get('category')
 
-                # Vérifier l'extension du fichier
+                # Check the file extension
                 if not uploaded_file.name.lower().endswith(('.png', '.jpg', '.jpeg')):
                     return render(request, 'administrator/upload.html', {
                         'marker_files': marker_files,
@@ -349,27 +349,27 @@ def administrator_upload(request):
                         'error': 'Seuls les fichiers PNG, JPG et JPEG sont acceptés.'
                     })
 
-                # Déterminer le préfixe et le chemin selon la catégorie
+                # Determine prefix and path according to category
                 if category == 'marker':
                     prefix = 'marker-'
                     target_dir = img_dir
-                else:  # plan
+                else:  # floor plan
                     prefix = 'plan-'
                     target_dir = plans_dir
 
-                # S'assurer que le dossier cible existe
+                # Ensure the target folder exists
                 os.makedirs(target_dir, exist_ok=True)
 
-                # Créer le nom de fichier avec le préfixe
+                # Create file name with prefix
                 filename = prefix + uploaded_file.name
                 file_path = os.path.join(target_dir, filename)
 
-                # Sauvegarder le fichier
+                # Save the file
                 with open(file_path, 'wb+') as destination:
                     for chunk in uploaded_file.chunks():
                         destination.write(chunk)
 
-                # Mettre à jour les listes de fichiers
+                # Update file lists
                 if category == 'marker':
                     marker_files.append(filename)
                 else:
@@ -388,7 +388,7 @@ def administrator_upload(request):
                     'error': f'Erreur lors du téléversement: {str(e)}'
                 })
 
-    # Requête GET - afficher simplement la page
+    # GET request - simply display the page
     return render(request, 'administrator/upload.html', {
         'marker_files': marker_files,
         'plan_files': plan_files

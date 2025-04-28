@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from .models import CustomUser
 
 class UserCreationForm(forms.ModelForm):
-    """Formulaire pour créer un nouvel utilisateur avec un mot de passe"""
+    """Form to create a new user with a password"""
     password1 = forms.CharField(label='Mot de passe', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirmation du mot de passe', widget=forms.PasswordInput)
 
@@ -14,7 +14,7 @@ class UserCreationForm(forms.ModelForm):
         fields = ('username', 'role')
 
     def clean_password2(self):
-        # Vérifie que les deux mots de passe correspondent
+        # Check that the two passwords match
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
@@ -22,7 +22,7 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
-        # Enregistre le mot de passe fourni en format haché
+        # Saves the provided password in hashed format
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
@@ -30,7 +30,7 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 class UserChangeForm(forms.ModelForm):
-    """Formulaire pour mettre à jour un utilisateur"""
+    """Form to update a user"""
     password = ReadOnlyPasswordHashField(
         label="Mot de passe",
         help_text=(

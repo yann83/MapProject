@@ -10,16 +10,6 @@ Currently the application is functional but I need to check the code, correct it
 It's a relatively easy-to-access tool for businesses to create interactive maps. It includes a global map and floor plans.
 There's an administrator section with several roles and associated restrictions.
 
-## Installation
-
-I use Python 3.10 and Django
-
- > pip install poetry
- 
-Install all packages
-
-> poetry install
-
 ## Prequesite
 
 Externals assets :
@@ -28,6 +18,30 @@ Externals assets :
  - fontawesome free 6.4.0
  - leaflet 1.9.4
  
+## Installation
+
+I use Python 3.10 and Django
+
+> git clone https://github.com/yann83/MapProject.git
+
+> pip install poetry
+ 
+Install all packages
+
+> poetry install
+
+## How to run
+
+Go to your `floorproject` folder and type
+
+```bash
+cd floorproject
+python manage.py runserver
+```
+
+Credientials are `admin` and `admin`
+
+## Structure 
  
 ```
 floorproject/
@@ -99,10 +113,22 @@ floorproject/
 ├── db.sqlite3
 ```
 
-## How to run
+## Presentation
 
-Go to your `floorproject` folder and type
+Map from public interface, showing location of a building
 
-> python manage.py runserver
+![public_map](./img/02.jpg)
 
-Credientials are `admin` and `admin`
+Floor plans with markers
+
+![public_floorplan](./img/03.jpg)
+
+Admin interface where you select GPS coordinates or floor coordinates
+You can add edit and delete marker icon et location
+You can draw polygon.
+
+![admin_menu](./img/04.jpg)
+
+Maanger user and role : admin, carte or plan
+
+![admin_users](./img/01.jpg)
