@@ -1,7 +1,6 @@
 # Map Project
 
-https://img.shields.io/badge/status-b%C3%AAta-orange
-
+![Static Badge](https://img.shields.io/badge/status-b%C3%AAta-orange)
 
 ## Changes
 
