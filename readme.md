@@ -1,6 +1,12 @@
 # Map Project
 
+https://img.shields.io/badge/status-b%C3%AAta-orange
+
+
 ## Changes
+
+__04 May 2025__ <br>
+Most of the app have been translated to english with all comments
 
 __27 April 2025__ <br>
 Currently the application is functional but I need to check the code, correct it, translate it into English and check if there are any remaining bugs.

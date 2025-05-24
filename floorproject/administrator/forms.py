@@ -6,8 +6,8 @@ from .models import CustomUser
 
 class UserCreationForm(forms.ModelForm):
     """Form to create a new user with a password"""
-    password1 = forms.CharField(label='Mot de passe', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirmation du mot de passe', widget=forms.PasswordInput)
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
 
     class Meta:
         model = CustomUser
@@ -18,7 +18,7 @@ class UserCreationForm(forms.ModelForm):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
-            raise ValidationError("Les mots de passe ne correspondent pas")
+            raise ValidationError("Passwords do not match")
         return password2
 
     def save(self, commit=True):
@@ -32,11 +32,11 @@ class UserCreationForm(forms.ModelForm):
 class UserChangeForm(forms.ModelForm):
     """Form to update a user"""
     password = ReadOnlyPasswordHashField(
-        label="Mot de passe",
+        label="Password",
         help_text=(
-            "Les mots de passe ne sont pas stockés en clair, donc il n'y a pas moyen "
-            "de voir le mot de passe de cet utilisateur, mais vous pouvez le changer "
-            "en utilisant <a href=\"../password/\">ce formulaire</a>."
+            "Passwords are not stored in clear text, so there is no way to "
+            "see this user's password, but you can change it using "
+            "<a href=\"../password/\">this form</a>."
         ),
     )
 

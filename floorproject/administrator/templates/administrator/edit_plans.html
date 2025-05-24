@@ -2,7 +2,7 @@
 {% extends 'administrator/base.html' %}
 {% load static %}
 
-{% block title %}Édition des Plans{% endblock %}
+{% block title %}Edition of Plans{% endblock %}
 
 {% block css %}
 <style>
@@ -63,39 +63,39 @@
 
 {% block content %}
 <div class="container-fluid">
-    <h2 class="mb-4">Édition des Plans</h2>
+    <h2 class="mb-4">Edition of Plans</h2>
 
-    <!-- Carte pour visualiser et interagir -->
+    <!-- Map to visualize and interact -->
     <div class="row mb-4">
         <div class="col-md-12">
             <div id="map" style="width: 50%; height: 500px;" class="leaflet-container"></div>
         </div>
     </div>
 
-    <!-- Panel d'édition -->
+    <!-- Editing Panel -->
     <div class="row" style="width: 50%; height: 500px;">
         <div class="col-md-12">
             <ul class="nav nav-tabs" id="editionTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="true">Paramètres</button>
+                    <button class="nav-link active" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="true">Settings</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="plans-tab" data-bs-toggle="tab" data-bs-target="#plans" type="button" role="tab" aria-controls="plans" aria-selected="false">Plans</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="icons-tab" data-bs-toggle="tab" data-bs-target="#icons" type="button" role="tab" aria-controls="icons" aria-selected="false">Icônes</button>
+                    <button class="nav-link" id="icons-tab" data-bs-toggle="tab" data-bs-target="#icons" type="button" role="tab" aria-controls="icons" aria-selected="false">Icons</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="markers-tab" data-bs-toggle="tab" data-bs-target="#markers" type="button" role="tab" aria-controls="markers" aria-selected="false">Marqueurs</button>
+                    <button class="nav-link" id="markers-tab" data-bs-toggle="tab" data-bs-target="#markers" type="button" role="tab" aria-controls="markers" aria-selected="false">Markers</button>
                 </li>
             </ul>
 
             <div class="tab-content" id="editionTabsContent">
-                <!-- Onglet Paramètres (bounds et map) -->
+                <!-- Settings tab (bounds and map)-->
                 <div class="tab-pane fade show active" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                     <form id="settingsForm" class="row">
                         <div class="col-md-6">
-                            <h4>Limites de la carte (bounds)</h4>
+                            <h4>Map limits (bounds)</h4>
                             <div class="form-group">
                                 <label for="minX">X Min:</label>
                                 <input type="number" class="form-control" id="minX" required>
@@ -115,77 +115,77 @@
                         </div>
 
                         <div class="col-md-6">
-                            <h4>Paramètres de la carte (map)</h4>
+                            <h4>Map settings</h4>
                             <div class="form-group">
-                                <label for="minZoom">Zoom Minimum:</label>
+                                <label for="minZoom">Zoom minimum:</label>
                                 <input type="number" step="0.5" class="form-control" id="minZoom" required>
                             </div>
                             <div class="form-group">
-                                <label for="zoomDelta">Delta de Zoom:</label>
+                                <label for="zoomDelta">Zoom delta:</label>
                                 <input type="number" step="0.05" class="form-control" id="zoomDelta" required>
                             </div>
                             <div class="form-group">
-                                <label for="zoomSnap">Snap de Zoom:</label>
+                                <label for="zoomSnap">Zoom snap:</label>
                                 <input type="number" step="0.05" class="form-control" id="zoomSnap" required>
                             </div>
                             <div class="form-group">
-                                <label for="defaultLayer">Couche par défaut:</label>
+                                <label for="defaultLayer">Default layer:</label>
                                 <select class="form-control" id="defaultLayer">
-                                    <option value="">Sélectionnez un plan...</option>
-                                    <!-- Les plans seront ajoutés ici dynamiquement -->
+                                    <option value="">Select a plan...</option>
+                                    <!-- Plans will be added here dynamically -->
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="centerX">Centre X:</label>
+                                <label for="centerX">Center X:</label>
                                 <input type="number" class="form-control" id="centerX" required>
                             </div>
                             <div class="form-group">
-                                <label for="centerY">Centre Y:</label>
+                                <label for="centerY">Center Y:</label>
                                 <input type="number" class="form-control" id="centerY" required>
                             </div>
                             <div class="form-group">
-                                <label for="defaultZoom">Zoom par défaut:</label>
+                                <label for="defaultZoom">Zoom default:</label>
                                 <input type="number" step="0.5" class="form-control" id="defaultZoom" required>
                             </div>
                         </div>
 
                         <div class="col-12 mt-3">
-                            <button type="submit" class="btn btn-primary">Enregistrer</button>
-                            <button type="button" id="useCurrentBounds" class="btn btn-secondary">Utiliser Limites Actuelles</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" id="useCurrentBounds" class="btn btn-secondary">Use Current Limits</button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Onglet Plans -->
+                <!-- Plans tab -->
                 <div class="tab-pane fade" id="plans" role="tabpanel" aria-labelledby="plans-tab">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between mb-3">
-                                <h4>Liste des Plans</h4>
-                                <button class="btn btn-sm btn-success" id="newPlanBtn">Nouveau Plan</button>
+                                <h4>Plans list</h4>
+                                <button class="btn btn-sm btn-success" id="newPlanBtn">New Plan</button>
                             </div>
 
                             <div class="list-group mb-3" id="plansList">
-                                <!-- Les plans seront ajoutés ici dynamiquement -->
+                                <!-- Plans will be added here dynamically -->
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <form id="planForm" style="display: none;">
-                                <h5 id="planFormTitle">Ajouter un Plan</h5>
+                                <h5 id="planFormTitle">Add a Plan</h5>
                                 <div class="form-group">
-                                    <label for="planId">ID du Plan:</label>
+                                    <label for="planId">ID Plan:</label>
                                     <input type="text" class="form-control" id="planId" required>
                                     <small class="form-text text-muted" id="planIdFeedback"></small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="planName">Nom du Plan:</label>
+                                    <label for="planName">Plan name:</label>
                                     <input type="text" class="form-control" id="planName" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="planImage">Image du Plan:</label>
+                                    <label for="planImage">Plan image:</label>
                                     <select class="form-control" id="planImage" required>
-                                        <option value="">Sélectionnez une image...</option>
+                                        <option value="">Select a picture...</option>
                                         {% for file in plan_files %}
                                             <option value="{{ file }}">{{ file }}</option>
                                         {% endfor %}
@@ -193,108 +193,108 @@
                                 </div>
                                 <input type="hidden" id="planAction" value="create">
                                 <input type="hidden" id="originalPlanId" value="">
-                                <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                <button type="button" id="cancelPlanBtn" class="btn btn-secondary">Annuler</button>
-                                <button type="button" id="deletePlanBtn" class="btn btn-danger" style="display: none;">Supprimer</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="button" id="cancelPlanBtn" class="btn btn-secondary">Cancel</button>
+                                <button type="button" id="deletePlanBtn" class="btn btn-danger" style="display: none;">Delete</button>
                             </form>
 
                             <div id="planOrderContainer" class="mt-4">
-                                <h5>Ordre des Plans</h5>
-                                <p class="text-muted">Glissez-déposez pour changer l'ordre</p>
+                                <h5>Order of Plans</h5>
+                                <p class="text-muted">Drag and drop to change the order</p>
                                 <div class="list-group" id="plansOrderList">
-                                    <!-- Les plans seront ajoutés ici dynamiquement pour être réordonnés -->
+                                    <!-- Plans will be added here dynamically to be reordered -->
                                 </div>
-                                <button type="button" id="saveOrderBtn" class="btn btn-primary mt-3">Enregistrer l'Ordre</button>
+                                <button type="button" id="saveOrderBtn" class="btn btn-primary mt-3">Save the Order</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Onglet Icônes -->
+                <!-- Icons tab -->
                 <div class="tab-pane fade" id="icons" role="tabpanel" aria-labelledby="icons-tab">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between mb-3">
-                                <h4>Liste des Icônes</h4>
-                                <button class="btn btn-sm btn-success" id="newIconBtn">Nouvelle Icône</button>
+                                <h4>Icons list</h4>
+                                <button class="btn btn-sm btn-success" id="newIconBtn">New Icon</button>
                             </div>
 
                             <div class="list-group mb-3" id="iconsList">
-                                <!-- Les icônes seront ajoutées ici dynamiquement -->
+                                <!-- Icons will be added here dynamically -->
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <form id="iconForm" style="display: none;">
-                                <h5 id="iconFormTitle">Ajouter une Icône</h5>
+                                <h5 id="iconFormTitle">Add an Icon</h5>
                                 <div class="form-group">
-                                    <label for="iconName">Nom de l'Icône:</label>
+                                    <label for="iconName">Name of the Icone:</label>
                                     <input type="text" class="form-control" id="iconName" required>
                                     <small class="form-text text-muted" id="iconNameFeedback"></small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="iconUrl">URL de l'Icône:</label>
+                                    <label for="iconUrl">Icon URL:</label>
                                     <select class="form-control" id="iconUrl" required>
-                                        <option value="">Sélectionnez une icône...</option>
+                                        <option value="">Select an icon...</option>
                                         {% for file in marker_files %}
                                             <option value="{{ file }}">{{ file }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="shadowUrl">URL de l'Ombre:</label>
+                                    <label for="shadowUrl">Shadow URL:</label>
                                     <select class="form-control" id="shadowUrl">
-                                        <option value="">Aucune ombre</option>
+                                        <option value="">No shadow</option>
                                         {% for file in marker_files %}
                                             <option value="{{ file }}">{{ file }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="iconSize">Taille de l'Icône [largeur, hauteur]:</label>
+                                    <label for="iconSize">Icon Size [width, height]:</label>
                                     <input type="text" class="form-control" id="iconSize" placeholder="Ex: [25, 41]">
                                 </div>
                                 <div class="form-group">
-                                    <label for="iconAnchor">Ancre de l'Icône [x, y]:</label>
+                                    <label for="iconAnchor">Anchor Icon [x, y]:</label>
                                     <input type="text" class="form-control" id="iconAnchor" placeholder="Ex: [12, 41]">
                                 </div>
                                 <div class="form-group">
-                                    <label for="popupAnchor">Ancre du Popup [x, y]:</label>
+                                    <label for="popupAnchor">Popup Anchor [x, y]:</label>
                                     <input type="text" class="form-control" id="popupAnchor" placeholder="Ex: [1, -34]">
                                 </div>
                                 <div class="form-group">
-                                    <label for="shadowSize">Taille de l'Ombre [largeur, hauteur]:</label>
+                                    <label for="shadowSize">Shadow Size [width, height]:</label>
                                     <input type="text" class="form-control" id="shadowSize" placeholder="Ex: [41, 41]">
                                 </div>
                                 <input type="hidden" id="iconAction" value="create">
                                 <input type="hidden" id="originalIconName" value="">
-                                <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                <button type="button" id="cancelIconBtn" class="btn btn-secondary">Annuler</button>
-                                <button type="button" id="deleteIconBtn" class="btn btn-danger" style="display: none;">Supprimer</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="button" id="cancelIconBtn" class="btn btn-secondary">Cancel</button>
+                                <button type="button" id="deleteIconBtn" class="btn btn-danger" style="display: none;">Delete</button>
                             </form>
                         </div>
                     </div>
                 </div>
 
-                <!-- Onglet Marqueurs -->
+                <!-- Markers Tab -->
                 <div class="tab-pane fade" id="markers" role="tabpanel" aria-labelledby="markers-tab">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between mb-3">
-                                <h4>Liste des Marqueurs</h4>
-                                <button class="btn btn-sm btn-success" id="newMarkerBtn">Nouveau Marqueur</button>
+                                <h4>Markers list</h4>
+                                <button class="btn btn-sm btn-success" id="newMarkerBtn">New Marker</button>
                             </div>
 
                             <div class="list-group mb-3" id="markersList">
-                                <!-- Les marqueurs seront ajoutés ici dynamiquement -->
+                                <!-- Markers will be added here dynamically -->
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <form id="markerForm" style="display: none;">
-                                <h5 id="markerFormTitle">Ajouter un Marqueur</h5>
+                                <h5 id="markerFormTitle">Add a Marker</h5>
                                 <div class="form-group">
-                                    <label for="markerId">ID du Marqueur:</label>
+                                    <label for="markerId">Marker ID:</label>
                                     <input type="text" class="form-control" id="markerId" required>
                                     <small class="form-text text-muted" id="markerIdFeedback"></small>
                                 </div>
@@ -306,36 +306,36 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="markerBound">Plan Associé:</label>
+                                    <label for="markerBound">Associated Plan:</label>
                                     <select class="form-control" id="markerBound" required>
-                                        <option value="">Sélectionnez un plan...</option>
-                                        <!-- Les plans seront ajoutés ici dynamiquement -->
+                                        <option value="">Select a plan...</option>
+                                        <!-- Plans will be added here dynamically -->
                                     </select>
                                 </div>
                                 <div class="form-group marker-field">
-                                    <label for="markerCoords">Coordonnées [x, y]:</label>
+                                    <label for="markerCoords">Coordinates [x, y]:</label>
                                     <input type="text" class="form-control" id="markerCoords" placeholder="Ex: [800, 400]" required>
                                 </div>
                                 <div class="form-group polygon-field" style="display: none;">
-                                    <label for="polygonCoords">Coordonnées du Polygone [[x1, y1], [x2, y2], ...]:</label>
+                                    <label for="polygonCoords">Polygone coordinates [[x1, y1], [x2, y2], ...]:</label>
                                     <textarea class="form-control" id="polygonCoords" rows="4" placeholder="Ex: [[800, 400], [900, 500], [700, 600]]"></textarea>
                                 </div>
                                 <div class="form-group marker-field">
                                     <label for="markerIcon">Icône:</label>
                                     <select class="form-control" id="markerIcon">
-                                        <option value="">Marqueur par défaut</option>
-                                        <!-- Les icônes seront ajoutées ici dynamiquement -->
+                                        <option value="">Default Maker</option>
+                                        <!-- Icons will be added here dynamically -->
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="markerPopup">Texte du Popup:</label>
+                                    <label for="markerPopup">Popup Text:</label>
                                     <textarea class="form-control" id="markerPopup" rows="2"></textarea>
                                 </div>
                                 <input type="hidden" id="markerAction" value="create">
                                 <input type="hidden" id="originalMarkerId" value="">
-                                <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                <button type="button" id="cancelMarkerBtn" class="btn btn-secondary">Annuler</button>
-                                <button type="button" id="deleteMarkerBtn" class="btn btn-danger" style="display: none;">Supprimer</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="button" id="cancelMarkerBtn" class="btn btn-secondary">Cancel</button>
+                                <button type="button" id="deleteMarkerBtn" class="btn btn-danger" style="display: none;">Delete</button>
                             </form>
                         </div>
                     </div>
@@ -349,16 +349,16 @@
 {% block script %}
 <script src="{% static 'js/Sortable.min.js' %}"></script>
 <script>
-    // Stocker les données JSON chargées depuis le serveur
+    // Store JSON data loaded from the server
     const mapData = {{ map_data|safe }};
 
-    // Définir les chemins statiques
+    // Define static paths
     const STATIC_URL_IMG = "{% static 'img/' %}";
     const STATIC_URL_MARKERS = "{% static 'markers/' %}";
     const STATIC_URL_PLANS = "{% static 'plans/' %}";
     const STATIC_URL_JSON = "{% static 'json/' %}";
 
-    // Variables globales
+    // Global variables
     let map;
     let currentLayers = {};
     let currentMarkers = {};
@@ -369,9 +369,9 @@
     let tempPolygon = null;
     let planOrder = [];
 
-    // Initialiser la carte
+    // Initialize the card
     function initMap() {
-        // Créer la carte avec les paramètres spécifiés
+        // Create the map with the specified parameters
         map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: mapData.map.minZoom || -5,
@@ -379,21 +379,21 @@
             zoomSnap: mapData.map.zoomSnap || 0
         });
 
-        // Configurer les limites
+        // Configure limits
         const bounds = mapData.bounds;
         map.fitBounds(bounds);
 
-        // Créer les couches pour les différents plans
+        // Create the layers for the different plans
         currentLayers = {};
         if (mapData.plans) {
-            // Récupérer l'ordre actuel des plans
+            // Retrieve the current order of plans
             planOrder = Object.keys(mapData.plans);
 
             for (const [planId, plan] of Object.entries(mapData.plans)) {
                 currentLayers[planId] = L.layerGroup();
                 L.imageOverlay(STATIC_URL_PLANS + plan.image, bounds).addTo(currentLayers[planId]);
 
-                // Ajouter les marqueurs associés à ce plan
+                // Add the markers associated with this plan
                 if (mapData.markers) {
                     for (const markerGroup of mapData.markers) {
                         for (const [markerId, marker] of Object.entries(markerGroup)) {
@@ -405,14 +405,14 @@
                 }
             }
 
-            // Ajouter la couche par défaut à la carte
+            // Add the default layer to the map
             if (mapData.map.layers && currentLayers[mapData.map.layers]) {
                 currentLayers[mapData.map.layers].addTo(map);
             } else if (planOrder.length > 0) {
                 currentLayers[planOrder[0]].addTo(map);
             }
 
-            // Ajouter le contrôle de couches
+            // Add Layer Control
             const baseMaps = {};
             for (const planId of planOrder) {
                 if (mapData.plans[planId]) {
@@ -422,27 +422,27 @@
             L.control.layers(baseMaps).addTo(map);
         }
 
-        // Initialiser les icônes personnalisées
+        // Initialize custom icons
         if (mapData.icons) {
             iconsList = mapData.icons;
         }
 
-        // Configurer la vue
+        // Configure the view
         if (mapData.map.xy && mapData.map.z !== undefined) {
             map.setView([mapData.map.xy[0], mapData.map.xy[1]], mapData.map.z);
         }
 
-        // Événement de clic pour obtenir les coordonnées
+        // Click event to get coordinates
         map.on('click', function(e) {
             const x = Math.round(e.latlng.lat);
             const y = Math.round(e.latlng.lng);
             console.log(`[${x}, ${y}]`);
 
-            // Si on est en train de dessiner un polygone, ajouter le point
+            // If we are drawing a polygon, add the point
             if (drawingPolygon) {
                 polygonPoints.push([x, y]);
 
-                // Mettre à jour le polygone temporaire
+                // Update the temporary polygon
                 if (tempPolygon) {
                     map.removeLayer(tempPolygon);
                 }
@@ -453,20 +453,20 @@
                     tempPolygon = L.polyline(polygonPoints, { color: '#ff7800' }).addTo(map);
                 }
 
-                // Mettre à jour le champ de texte des coordonnées
+                // Update the coordinates text field
                 document.getElementById('polygonCoords').value = JSON.stringify(polygonPoints);
             }
         });
     }
 
-    // Ajouter un marqueur ou polygone à la carte
+    // Add a marker or polygon to the map
     function addMarkerToMap(markerId, markerData, planId) {
         if (!currentLayers[planId]) return;
 
         if (markerData.type === "marker") {
             const markerOptions = {};
 
-            // Si une icône est spécifiée et existe dans notre liste d'icônes
+            // If an icon is specified and exists in our icon list
             if (markerData.icon && iconsList[markerData.icon]) {
                 const iconConfig = iconsList[markerData.icon];
                 const iconUrl = iconConfig.iconUrl.startsWith('marker-') ?
@@ -488,51 +488,51 @@
                 });
             }
 
-            // Créer et ajouter le marqueur à la couche correspondante
+            // Create and add the marker to the corresponding layer
             const marker = L.marker(markerData.xy, markerOptions)
                 .bindPopup(markerData.popup || '')
                 .addTo(currentLayers[planId]);
 
-            // Stocker le marqueur pour pouvoir le supprimer plus tard
+            // Store the marker so you can delete it later
             if (!currentMarkers[planId]) currentMarkers[planId] = {};
             currentMarkers[planId][markerId] = marker;
 
         } else if (markerData.type === "polygon") {
-            // Créer et ajouter le polygone à la couche correspondante
+            // Create and add the polygon to the corresponding layer
             const polygon = L.polygon(markerData.xy, {
                 color: markerData.color || '#3388ff'
             })
                 .bindPopup(markerData.popup || '')
                 .addTo(currentLayers[planId]);
 
-            // Stocker le polygone pour pouvoir le supprimer plus tard
+            // Store the polygon so that it can be deleted later
             if (!currentPolygons[planId]) currentPolygons[planId] = {};
             currentPolygons[planId][markerId] = polygon;
         }
     }
 
-    // Mettre à jour les listes déroulantes des plans
+    // Update the plan drop-down lists
     function updatePlansDropdowns() {
         const defaultLayer = document.getElementById('defaultLayer');
         const markerBound = document.getElementById('markerBound');
 
-        // Vider les listes
+        // Clear the lists
         defaultLayer.innerHTML = '<option value="">Sélectionnez un plan...</option>';
         markerBound.innerHTML = '<option value="">Sélectionnez un plan...</option>';
 
-        // Ajouter les plans dans l'ordre actuel
+        // Add plans in current order
         if (mapData.plans) {
             for (const planId of planOrder) {
                 if (mapData.plans[planId]) {
                     const plan = mapData.plans[planId];
 
-                    // Ajouter l'option au dropdown defaultLayer
+                    // Add the option to the defaultLayer dropdown
                     const optionDefault = document.createElement('option');
                     optionDefault.value = planId;
                     optionDefault.textContent = plan.name;
                     defaultLayer.appendChild(optionDefault);
 
-                    // Ajouter l'option au dropdown markerBound
+                    // Add the option to the markerBound dropdown
                     const optionBound = document.createElement('option');
                     optionBound.value = planId;
                     optionBound.textContent = plan.name;
@@ -541,13 +541,13 @@
             }
         }
 
-        // Sélectionner la couche par défaut actuelle
+        // Select the current default layer
         if (mapData.map && mapData.map.layers) {
             defaultLayer.value = mapData.map.layers;
         }
     }
 
-    // Mettre à jour la liste des plans dans l'interface
+    // Update the plan list in the interface
     function updatePlansList() {
         const plansList = document.getElementById('plansList');
         plansList.innerHTML = '';
@@ -560,12 +560,12 @@
                 if (mapData.plans[planId]) {
                     const plan = mapData.plans[planId];
 
-                    // Créer l'élément pour la liste des plans
+                    // Create the item for the plan list
                     const listItem = document.createElement('a');
                     listItem.className = 'list-group-item list-group-item-action d-flex align-items-center';
                     listItem.setAttribute('data-plan-id', planId);
 
-                    // Créer une prévisualisation du plan
+                    // Create a plan preview
                     const planPreview = document.createElement('img');
                     planPreview.src = STATIC_URL_PLANS + plan.image;
                     planPreview.className = 'plan-preview me-3';
@@ -577,14 +577,14 @@
                     listItem.appendChild(planPreview);
                     listItem.appendChild(textSpan);
 
-                    // Ajouter l'événement de clic pour éditer le plan
+                    // Add click event to edit the plan
                     listItem.addEventListener('click', function() {
                         editPlan(planId);
                     });
 
                     plansList.appendChild(listItem);
 
-                    // Créer l'élément pour la liste d'ordre des plans
+                    // Create the item for the plan order list
                     const orderItem = document.createElement('div');
                     orderItem.className = 'list-group-item d-flex align-items-center';
                     orderItem.setAttribute('data-plan-id', planId);
@@ -615,11 +615,11 @@
             }
         }
 
-        // Initialiser le tri par glisser-déposer pour l'ordre des plans
+        // Initialize drag-and-drop sorting for plan order
         initSortable();
     }
 
-    // Initialiser le tri par glisser-déposer
+    // Initialize drag and drop sorting
     function initSortable() {
         const plansOrderList = document.getElementById('plansOrderList');
         new Sortable(plansOrderList, {
@@ -636,7 +636,7 @@
         });
     }
 
-    // Mettre à jour la liste des icônes dans l'interface
+    // Update the list of icons in the interface
     function updateIconsList() {
         const iconsList = document.getElementById('iconsList');
         iconsList.innerHTML = '';
@@ -647,7 +647,7 @@
                 listItem.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
                 listItem.setAttribute('data-icon-name', iconName);
 
-                // Créer une prévisualisation de l'icône
+                // Create an icon preview
                 const iconPreview = document.createElement('img');
                 iconPreview.src = STATIC_URL_MARKERS + iconConfig.iconUrl;
                 iconPreview.className = 'icon-preview me-3';
@@ -659,7 +659,7 @@
                 listItem.appendChild(iconPreview);
                 listItem.appendChild(textSpan);
 
-                // Ajouter l'événement de clic pour éditer l'icône
+                // Add click event to edit icon
                 listItem.addEventListener('click', function() {
                     editIcon(iconName);
                 });
@@ -669,16 +669,16 @@
         }
     }
 
-    // Mettre à jour la liste déroulante des icônes pour les marqueurs
+    // Update the icon dropdown for markers
     function updateIconsDropdown() {
         const markerIcon = document.getElementById('markerIcon');
 
-        // Conserver uniquement l'option par défaut
+        // Keep only the default option
         while (markerIcon.options.length > 1) {
             markerIcon.remove(1);
         }
 
-        // Ajouter les icônes disponibles
+        // Add available icons
         if (mapData.icons) {
             for (const iconName of Object.keys(mapData.icons)) {
                 const option = document.createElement('option');
@@ -689,7 +689,7 @@
         }
     }
 
-    // Mettre à jour la liste des marqueurs dans l'interface
+    // Update the list of markers in the interface
     function updateMarkersList() {
         const markersList = document.getElementById('markersList');
         markersList.innerHTML = '';
@@ -701,7 +701,7 @@
                     listItem.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
                     listItem.setAttribute('data-marker-id', markerId);
 
-                    // Icône du type (marqueur ou polygone)
+                    // Icon type (marker or polygon)
                     const typeIcon = document.createElement('i');
                     typeIcon.className = `fas fa-${marker.type === 'marker' ? 'map-marker-alt' : 'draw-polygon'} me-2`;
 
@@ -716,7 +716,7 @@
                     listItem.appendChild(textSpan);
                     listItem.appendChild(boundSpan);
 
-                    // Ajouter l'événement de clic pour éditer le marqueur
+                    // Add click event to edit marker
                     listItem.addEventListener('click', function() {
                         editMarker(markerId);
                     });
@@ -727,16 +727,16 @@
         }
     }
 
-    // Éditer un plan existant
+    // Edit an existing plan
     function editPlan(planId) {
         const plan = mapData.plans[planId];
 
-        // Mettre à jour le formulaire avec les valeurs actuelles
+        // Update the form with the current values
         document.getElementById('planId').value = planId;
         document.getElementById('planName').value = plan.name || '';
         document.getElementById('planImage').value = plan.image || '';
 
-        // Changer l'action et afficher le formulaire
+        // Change the action and display the form
         document.getElementById('planAction').value = 'update';
         document.getElementById('originalPlanId').value = planId;
         document.getElementById('planFormTitle').textContent = 'Modifier un Plan';
@@ -744,11 +744,11 @@
         document.getElementById('planForm').style.display = 'block';
     }
 
-    // Éditer une icône existante
+    // Edit an existing icon
     function editIcon(iconName) {
         const iconConfig = mapData.icons[iconName];
 
-        // Mettre à jour le formulaire avec les valeurs actuelles
+        // Update the form with the current values
         document.getElementById('iconName').value = iconName;
         document.getElementById('iconUrl').value = iconConfig.iconUrl || '';
         document.getElementById('shadowUrl').value = iconConfig.shadowUrl || '';
@@ -757,7 +757,7 @@
         document.getElementById('popupAnchor').value = iconConfig.popupAnchor ? JSON.stringify(iconConfig.popupAnchor) : '';
         document.getElementById('shadowSize').value = iconConfig.shadowSize ? JSON.stringify(iconConfig.shadowSize) : '';
 
-        // Changer l'action et afficher le formulaire
+        // Change the action and display the form
         document.getElementById('iconAction').value = 'update';
         document.getElementById('originalIconName').value = iconName;
         document.getElementById('iconFormTitle').textContent = 'Modifier une Icône';
@@ -765,12 +765,12 @@
         document.getElementById('iconForm').style.display = 'block';
     }
 
-    // Trouver et éditer un marqueur existant
+    // Find and edit an existing marker
     function editMarker(markerId) {
         let markerData = null;
         let markerGroupIndex = -1;
 
-        // Rechercher le marqueur dans les groupes
+        // Search marker in groups
         for (let i = 0; i < mapData.markers.length; i++) {
             if (markerId in mapData.markers[i]) {
                 markerData = mapData.markers[i][markerId];
@@ -781,12 +781,12 @@
 
         if (!markerData) return;
 
-        // Mettre à jour le formulaire avec les valeurs actuelles
+        // Update the form with the current values
         document.getElementById('markerId').value = markerId;
         document.getElementById('markerType').value = markerData.type;
         document.getElementById('markerBound').value = markerData.bound || '';
 
-        // Afficher/masquer les champs appropriés selon le type
+        // Show/hide appropriate fields depending on the type
         toggleMarkerFields(markerData.type);
 
         if (markerData.type === 'marker') {
@@ -798,7 +798,7 @@
 
         document.getElementById('markerPopup').value = markerData.popup || '';
 
-        // Changer l'action et afficher le formulaire
+        // Change the action and display the form
         document.getElementById('markerAction').value = 'update';
         document.getElementById('originalMarkerId').value = markerId;
         document.getElementById('markerFormTitle').textContent = 'Modifier un Marqueur';
@@ -806,7 +806,7 @@
         document.getElementById('markerForm').style.display = 'block';
     }
 
-    // Basculer l'affichage des champs selon le type de marqueur
+    // Toggle field display based on marker type
     function toggleMarkerFields(type) {
         const markerFields = document.querySelectorAll('.marker-field');
         const polygonFields = document.querySelectorAll('.polygon-field');
@@ -820,7 +820,7 @@
         }
     }
 
-    // Sauvegarder les modifications sur le serveur
+    // Save changes to the server
     async function saveToServer(data) {
         try {
             const response = await fetch(window.location.href, {
@@ -838,16 +838,16 @@
             if (result.status === 'success') {
                 return true;
             } else {
-                alert('Erreur lors de la sauvegarde: ' + (result.message || 'Erreur inconnue'));
+                alert('Error while saving: ' + (result.message || 'Erreur inconnue'));
                 return false;
             }
         } catch (error) {
-            alert('Erreur lors de la sauvegarde: ' + error.message);
+            alert('Error while saving: ' + error.message);
             return false;
         }
     }
 
-    // Obtenir la valeur d'un cookie (pour CSRF)
+    // Get the value of a cookie (for CSRF)
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -863,7 +863,7 @@
         return cookieValue;
     }
 
-    // Vérifie si le nom d'icône est unique
+    // Checks if the icon name is unique
     function isIconNameUnique(name, originalName) {
         // Si c'est une mise à jour et que le nom n'a pas changé, c'est valide
         if (name === originalName) return true;
@@ -872,16 +872,16 @@
         return !(mapData.icons && mapData.icons.hasOwnProperty(name));
     }
 
-    // Vérifie si l'ID du plan est unique
+    // Checks if the plan ID is unique
     function isPlanIdUnique(id, originalId) {
         // Si c'est une mise à jour et que l'ID n'a pas changé, c'est valide
         if (id === originalId) return true;
 
-        // Vérifier si l'ID existe déjà dans les plans
+        // Check if ID already exists in plans
         return !(mapData.plans && mapData.plans.hasOwnProperty(id));
     }
 
-    // Vérifie si l'ID du marqueur est unique
+    // Checks if the marker ID is unique
     function isMarkerIdUnique(id, originalId) {
         // Si c'est une mise à jour et que l'ID n'a pas changé, c'est valide
         if (id === originalId) return true;
@@ -895,19 +895,19 @@
         return true;
     }
 
-    // Initialiser l'application quand le DOM est chargé
+    // Initialize the application when the DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
         // Initialiser la carte
         initMap();
 
-        // Mettre à jour les listes
+        // Update the lists
         updatePlansList();
         updateIconsList();
         updateIconsDropdown();
         updatePlansDropdowns();
         updateMarkersList();
 
-        // Remplir le formulaire de paramètres avec les valeurs actuelles
+        // Fill in the settings form with the current values
         document.getElementById('minX').value = mapData.bounds[0][0];
         document.getElementById('minY').value = mapData.bounds[0][1];
         document.getElementById('maxX').value = mapData.bounds[1][0];
@@ -921,7 +921,7 @@
         document.getElementById('centerY').value = mapData.map.xy ? mapData.map.xy[1] : 0;
         document.getElementById('defaultZoom').value = mapData.map.z || 0;
 
-        // Événement pour utiliser les limites actuelles de la carte
+        // Event to use current map limits
         document.getElementById('useCurrentBounds').addEventListener('click', function() {
             const bounds = map.getBounds();
             const sw = bounds.getSouthWest();
@@ -938,7 +938,7 @@
             document.getElementById('defaultZoom').value = map.getZoom();
         });
 
-        // Événement de soumission du formulaire de paramètres
+        // Parameters form submission event
         document.getElementById('settingsForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -955,7 +955,7 @@
             const centerY = parseInt(document.getElementById('centerY').value);
             const defaultZoom = parseFloat(document.getElementById('defaultZoom').value);
 
-            // Mettre à jour les données locales
+            // Update local data
             mapData.bounds = [[minX, minY], [maxX, maxY]];
             mapData.map = {
                 minZoom: minZoom,
@@ -966,7 +966,7 @@
                 z: defaultZoom
             };
 
-            // Envoyer les données au serveur
+            // Send data to the server
             const success = await saveToServer({
                 action: 'update_bounds_map',
                 bounds: mapData.bounds,
@@ -975,14 +975,14 @@
 
             if (success) {
                 // Recharger la page pour appliquer les changements
-                alert('Paramètres mis à jour avec succès! La page va être rechargée.');
+                alert('Settings updated successfully! The page will be reloaded.');
                 window.location.reload();
             }
         });
 
-        // Événements pour le formulaire de plans
+        // Events for the plans form
         document.getElementById('newPlanBtn').addEventListener('click', function() {
-            // Réinitialiser le formulaire
+            // Reset the form
             document.getElementById('planForm').reset();
             document.getElementById('planAction').value = 'create';
             document.getElementById('originalPlanId').value = '';
@@ -998,47 +998,47 @@
         document.getElementById('planForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Récupérer les valeurs du formulaire
+            // Retrieve form values
             const planId = document.getElementById('planId').value;
             const planName = document.getElementById('planName').value;
             const planImage = document.getElementById('planImage').value;
             const originalPlanId = document.getElementById('originalPlanId').value;
 
-            // Vérifier que l'ID est unique
+            // Check that the ID is unique
             if (!isPlanIdUnique(planId, originalPlanId)) {
-                alert('Cet ID de plan existe déjà. Veuillez en choisir un autre.');
+                alert('This plan ID already exists. Please choose another one.');
                 return;
             }
 
-            // Préparer les données du plan
+            // Prepare the plan data
             const planData = {
                 name: planName,
                 image: planImage
             };
 
-            // Déterminer l'action (création ou mise à jour)
+            // Determine the action (create or update)
             const planAction = document.getElementById('planAction').value;
 
-            // Mettre à jour les données locales
+            // Update local data
             if (!mapData.plans) mapData.plans = {};
 
-            // Si c'est une mise à jour et que l'ID a changé, supprimer l'ancienne entrée
+            // If this is an update and the ID has changed, delete the old entry
             if (planAction === 'update' && originalPlanId !== planId) {
                 delete mapData.plans[originalPlanId];
 
-                // Mettre à jour l'ordre des plans
+                // Update the order of the plans
                 const index = planOrder.indexOf(originalPlanId);
                 if (index !== -1) {
                     planOrder.splice(index, 1, planId);
                 }
             } else if (planAction === 'create') {
-                // Ajouter le nouveau plan à la fin de l'ordre
+                // Add the new plan to the end of the order
                 planOrder.push(planId);
             }
 
             mapData.plans[planId] = planData;
 
-            // Envoyer les données au serveur
+            // Send data to the server
             const success = await saveToServer({
                 action: 'crud_plan',
                 plan_action: planAction,
@@ -1048,7 +1048,7 @@
             });
 
             if (success) {
-                // Mettre à jour l'interface
+                // Update the interface
                 updatePlansList();
                 updatePlansDropdowns();
                 document.getElementById('planForm').style.display = 'none';
@@ -1060,18 +1060,18 @@
             const planId = document.getElementById('originalPlanId').value;
 
             if (confirm(`Êtes-vous sûr de vouloir supprimer le plan "${planId}" ?`)) {
-                // Supprimer le plan des données locales
+                // Delete local data plan
                 if (mapData.plans && mapData.plans[planId]) {
                     delete mapData.plans[planId];
 
-                    // Mettre à jour l'ordre des plans
+                    // Update the order of the plans
                     const index = planOrder.indexOf(planId);
                     if (index !== -1) {
                         planOrder.splice(index, 1);
                     }
                 }
 
-                // Envoyer la demande de suppression au serveur
+                // Send the deletion request to the server
                 const success = await saveToServer({
                     action: 'crud_plan',
                     plan_action: 'delete',
@@ -1079,18 +1079,18 @@
                 });
 
                 if (success) {
-                    // Mettre à jour l'interface
+                    // Update the interface
                     updatePlansList();
                     updatePlansDropdowns();
                     document.getElementById('planForm').style.display = 'none';
-                    alert('Plan supprimé avec succès!');
+                    alert('Plan successfully deleted!');
                 }
             }
         });
 
-        // Enregistrer l'ordre des plans
+        // Save the order of the shots
         document.getElementById('saveOrderBtn').addEventListener('click', async function() {
-            // Envoyer la demande de réordonnancement au serveur
+            // Send the reorder request to the server
             const success = await saveToServer({
                 action: 'crud_plan',
                 plan_action: 'reorder',
@@ -1098,11 +1098,11 @@
             });
 
             if (success) {
-                alert('Ordre des plans mis à jour avec succès!');
+                alert('Plan order successfully updated!');
             }
         });
 
-        // Événements pour le formulaire d'icônes
+        // Events for the icon form
         document.getElementById('newIconBtn').addEventListener('click', function() {
             // Réinitialiser le formulaire
             document.getElementById('iconForm').reset();
@@ -1120,7 +1120,7 @@
         document.getElementById('iconForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Récupérer les valeurs du formulaire
+            // Retrieve form values
             const iconName = document.getElementById('iconName').value;
             const iconUrl = document.getElementById('iconUrl').value;
             const shadowUrl = document.getElementById('shadowUrl').value;
@@ -1129,7 +1129,7 @@
             const popupAnchor = document.getElementById('popupAnchor').value;
             const shadowSize = document.getElementById('shadowSize').value;
 
-            // Vérifier que le nom est unique
+            // Check that the name is unique
             const originalIconName = document.getElementById('originalIconName').value;
             const isUnique = isIconNameUnique(iconName, originalIconName);
 
@@ -1141,7 +1141,7 @@
                 document.getElementById('iconNameFeedback').textContent = '';
             }
 
-            // Préparer les données de l'icône
+            // Prepare the icon data
             const iconData = {
                 iconUrl: iconUrl
             };
@@ -1151,7 +1151,7 @@
                 try {
                     iconData.iconSize = JSON.parse(iconSize);
                 } catch (error) {
-                    alert('Format invalide pour la taille de l\'icône. Utilisez le format [largeur, hauteur]');
+                    alert('Invalid format for icon size. Use the format [largeur, hauteur]');
                     return;
                 }
             }
@@ -1159,7 +1159,7 @@
                 try {
                     iconData.iconAnchor = JSON.parse(iconAnchor);
                 } catch (error) {
-                    alert('Format invalide pour l\'ancre de l\'icône. Utilisez le format [x, y]');
+                    alert('Invalid format for icon anchor. Use the format [x, y]');
                     return;
                 }
             }
@@ -1167,7 +1167,7 @@
                 try {
                     iconData.popupAnchor = JSON.parse(popupAnchor);
                 } catch (error) {
-                    alert('Format invalide pour l\'ancre du popup. Utilisez le format [x, y]');
+                    alert('Invalid format for popup anchor. Use the format [x, y]');
                     return;
                 }
             }
@@ -1175,25 +1175,25 @@
                 try {
                     iconData.shadowSize = JSON.parse(shadowSize);
                 } catch (error) {
-                    alert('Format invalide pour la taille de l\'ombre. Utilisez le format [largeur, hauteur]');
+                    alert('Invalid format for shadow size. Use the format [largeur, hauteur]');
                     return;
                 }
             }
 
-            // Déterminer l'action (création ou mise à jour)
+            // Determine the action (create or update)
             const iconAction = document.getElementById('iconAction').value;
 
-            // Mettre à jour les données locales
+            // Update local data
             if (!mapData.icons) mapData.icons = {};
 
-            // Si c'est une mise à jour et que le nom a changé, supprimer l'ancienne entrée
+            // If this is an update and the name has changed, delete the old entry
             if (iconAction === 'update' && originalIconName !== iconName) {
                 delete mapData.icons[originalIconName];
             }
 
             mapData.icons[iconName] = iconData;
 
-            // Envoyer les données au serveur
+            // Send data to the server
             const success = await saveToServer({
                 action: 'crud_icon',
                 icon_action: iconAction,
@@ -1203,7 +1203,7 @@
             });
 
             if (success) {
-                // Mettre à jour l'interface
+                // Update the interface
                 updateIconsList();
                 updateIconsDropdown();
                 document.getElementById('iconForm').style.display = 'none';
@@ -1211,7 +1211,7 @@
             }
         });
 
-        // Ajouter une validation en temps réel pour le nom d'icône
+        // Add real-time validation for icon name
         document.getElementById('iconName').addEventListener('input', function() {
             const iconName = this.value;
             const originalIconName = document.getElementById('originalIconName').value;
@@ -1226,7 +1226,7 @@
             }
         });
 
-        // Ajouter une validation en temps réel pour l'ID du plan
+        // Add real-time validation for plan ID
         document.getElementById('planId').addEventListener('input', function() {
             const planId = this.value;
             const originalPlanId = document.getElementById('originalPlanId').value;
@@ -1242,7 +1242,7 @@
             }
         });
 
-        // Ajouter une validation en temps réel pour l'ID du marqueur
+        // Add real-time validation for marker ID
         document.getElementById('markerId').addEventListener('input', function() {
             const markerId = this.value;
             const originalMarkerId = document.getElementById('originalMarkerId').value;
@@ -1261,13 +1261,13 @@
         document.getElementById('deleteIconBtn').addEventListener('click', async function() {
             const iconName = document.getElementById('originalIconName').value;
 
-            if (confirm(`Êtes-vous sûr de vouloir supprimer l'icône "${iconName}" ?`)) {
-                // Supprimer l'icône des données locales
+            if (confirm(`Are you sure you want to delete the icon "${iconName}" ?`)) {
+                // Remove local data icon
                 if (mapData.icons && mapData.icons[iconName]) {
                     delete mapData.icons[iconName];
                 }
 
-                // Envoyer la demande de suppression au serveur
+                // Send the deletion request to the server
                 const success = await saveToServer({
                     action: 'crud_icon',
                     icon_action: 'delete',
@@ -1275,18 +1275,18 @@
                 });
 
                 if (success) {
-                    // Mettre à jour l'interface
+                    // Update the interface
                     updateIconsList();
                     updateIconsDropdown();
                     document.getElementById('iconForm').style.display = 'none';
-                    alert('Icône supprimée avec succès!');
+                    alert('Icon successfully deleted!');
                 }
             }
         });
 
-        // Événements pour le formulaire de marqueurs
+        // Events for the marker form
         document.getElementById('newMarkerBtn').addEventListener('click', function() {
-            // Réinitialiser le formulaire
+            // Reset the form
             document.getElementById('markerForm').reset();
             document.getElementById('markerAction').value = 'create';
             document.getElementById('originalMarkerId').value = '';
@@ -1310,41 +1310,41 @@
             toggleMarkerFields(this.value);
         });
 
-        // Bouton pour activer/désactiver le mode de dessin de polygone
+        // Button to enable/disable polygon drawing mode
         document.getElementById('polygonCoords').addEventListener('focus', function() {
             if (!drawingPolygon) {
                 drawingPolygon = true;
                 polygonPoints = [];
-                alert('Mode dessin de polygone activé. Cliquez sur la carte pour ajouter des points. Cliquez sur Enregistrer quand vous avez terminé.');
+                alert('Polygon drawing mode is enabled. Click on the map to add points. Click Save when finished.');
             }
         });
 
         document.getElementById('markerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Récupérer les valeurs du formulaire
+            // Retrieve form values
             const markerId = document.getElementById('markerId').value;
             const markerType = document.getElementById('markerType').value;
             const markerBound = document.getElementById('markerBound').value;
             const originalMarkerId = document.getElementById('originalMarkerId').value;
 
-            // Vérifier que l'ID est unique
+            // Check that the ID is unique
             if (!isMarkerIdUnique(markerId, originalMarkerId)) {
-                alert('Cet ID de marqueur existe déjà. Veuillez en choisir un autre.');
+                alert('This marker ID already exists. Please choose another one..');
                 return;
             }
 
             if (!markerBound) {
-                alert('Vous devez sélectionner un plan associé pour ce marqueur.');
+                alert('You must select an associated plan for this marker.');
                 return;
             }
 
             if (!markerBound) {
-                alert('Vous devez sélectionner un plan associé pour ce marqueur.');
+                alert('You must select an associated plan for this marker.');
                 return;
             }
 
-            // Préparer les données du marqueur
+            // Prepare marker data
             const markerData = {
                 type: markerType,
                 bound: markerBound
@@ -1354,7 +1354,7 @@
                 try {
                     markerData.xy = JSON.parse(document.getElementById('markerCoords').value);
                 } catch (error) {
-                    alert('Format invalide pour les coordonnées. Utilisez le format [x, y]');
+                    alert('Invalid format for coordinates. Use the format [x, y]');
                     return;
                 }
 
@@ -1365,7 +1365,7 @@
                 try {
                     markerData.xy = JSON.parse(document.getElementById('polygonCoords').value);
                 } catch (error) {
-                    alert('Format invalide pour les coordonnées du polygone. Utilisez le format [[x1, y1], [x2, y2], ...]');
+                    alert('Invalid format for polygon coordinates. Use the format [[x1, y1], [x2, y2], ...]');
                     return;
                 }
             }
@@ -1373,10 +1373,10 @@
             const popupValue = document.getElementById('markerPopup').value;
             if (popupValue) markerData.popup = popupValue;
 
-            // Déterminer l'action (création ou mise à jour)
+            // Determine the action (create or update)
             const markerAction = document.getElementById('markerAction').value;
 
-            // Trouver l'index du marqueur si c'est une mise à jour
+            // Find the marker index if it is an update
             let markerGroupIndex = -1;
             if (markerAction === 'update') {
                 for (let i = 0; i < mapData.markers.length; i++) {
@@ -1387,9 +1387,9 @@
                 }
             }
 
-            // Si c'est une mise à jour, supprimer le marqueur existant de la carte
+            // If this is an update, remove the existing marker from the map
             if (markerAction === 'update') {
-                // Supprimer de la couche
+                // Delete from layer
                 const oldBound = markerGroupIndex !== -1 ? mapData.markers[markerGroupIndex][originalMarkerId].bound : null;
 
                 if (oldBound && currentMarkers[oldBound] && currentMarkers[oldBound][originalMarkerId]) {
@@ -1403,10 +1403,10 @@
                 }
             }
 
-            // Mettre à jour les données locales
+            // Update local data
             if (!mapData.markers) mapData.markers = [];
 
-            // Si c'est une mise à jour, mettre à jour le marqueur existant
+            // If this is an update, update the existing marker
             if (markerAction === 'update' && markerGroupIndex !== -1) {
                 // Si l'ID a changé, supprimer l'ancienne entrée
                 if (originalMarkerId !== markerId) {
@@ -1420,12 +1420,12 @@
                 mapData.markers.push(newMarker);
             }
 
-            // Ajouter le nouveau marqueur à la carte
+            // Add the new marker to the map
             if (currentLayers[markerBound]) {
                 addMarkerToMap(markerId, markerData, markerBound);
             }
 
-            // Envoyer les données au serveur
+            // Send data to the server
             const success = await saveToServer({
                 action: 'crud_marker',
                 marker_action: markerAction,
@@ -1435,12 +1435,12 @@
             });
 
             if (success) {
-                // Mettre à jour l'interface
+                // Update the interface
                 updateMarkersList();
                 document.getElementById('markerForm').style.display = 'none';
-                alert(`Marqueur ${markerAction === 'create' ? 'ajouté' : 'mis à jour'} avec succès!`);
+                alert(`Marqueur ${markerAction === 'create' ? 'add' : 'update'} with success!`);
 
-                // Réinitialiser le mode dessin de polygone
+                // Reset polygon drawing mode
                 drawingPolygon = false;
                 polygonPoints = [];
                 if (tempPolygon) {
@@ -1454,7 +1454,7 @@
             const markerId = document.getElementById('originalMarkerId').value;
 
             if (confirm(`Êtes-vous sûr de vouloir supprimer le marqueur "${markerId}" ?`)) {
-                // Trouver le marqueur
+                // Find the marker
                 let markerData = null;
                 let markerGroupIndex = -1;
 
@@ -1467,7 +1467,7 @@
                 }
 
                 if (markerData && markerData.bound) {
-                    // Supprimer le marqueur de la carte
+                    // Remove the marker from the map
                     if (currentMarkers[markerData.bound] && currentMarkers[markerData.bound][markerId]) {
                         map.removeLayer(currentMarkers[markerData.bound][markerId]);
                         delete currentMarkers[markerData.bound][markerId];
@@ -1479,17 +1479,17 @@
                     }
                 }
 
-                // Supprimer le marqueur des données locales
+                // Remove marker from local data
                 if (markerGroupIndex !== -1) {
                     delete mapData.markers[markerGroupIndex][markerId];
 
-                    // Si le groupe est vide, le supprimer complètement
+                    // If the group is empty, delete it completely
                     if (Object.keys(mapData.markers[markerGroupIndex]).length === 0) {
                         mapData.markers.splice(markerGroupIndex, 1);
                     }
                 }
 
-                // Envoyer la demande de suppression au serveur
+                // Send the deletion request to the server
                 const success = await saveToServer({
                     action: 'crud_marker',
                     marker_action: 'delete',
@@ -1497,10 +1497,10 @@
                 });
 
                 if (success) {
-                    // Mettre à jour l'interface
+                    // Update the interface
                     updateMarkersList();
                     document.getElementById('markerForm').style.display = 'none';
-                    alert('Marqueur supprimé avec succès!');
+                    alert('Marker successfully removed!');
                 }
             }
         });

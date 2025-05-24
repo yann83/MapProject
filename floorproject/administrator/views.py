@@ -47,7 +47,7 @@ def administrator_edit_user(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
     # Allow users to edit their own profile
     if request.user.id != user.id and request.user.role != 'admin':
-        messages.error(request, "Vous ne pouvez pas modifier cet utilisateur.")
+        messages.error(request, "You cannot edit this user.")
         return redirect('administrator-users')
 
     if request.method == 'POST':
@@ -328,9 +328,9 @@ def administrator_upload(request):
                 # Check if the file exists before deleting it
                 if os.path.exists(file_path):
                     os.remove(file_path)
-                    return JsonResponse({'status': 'success', 'message': f'Fichier {filename} supprimé avec succès.'})
+                    return JsonResponse({'status': 'success', 'message': f'File {filename} successfully deleted.'})
                 else:
-                    return JsonResponse({'status': 'error', 'message': 'Fichier non trouvé.'})
+                    return JsonResponse({'status': 'error', 'message': 'File not found.'})
 
             except Exception as e:
                 return JsonResponse({'status': 'error', 'message': str(e)})
@@ -346,7 +346,7 @@ def administrator_upload(request):
                     return render(request, 'administrator/upload.html', {
                         'marker_files': marker_files,
                         'plan_files': plan_files,
-                        'error': 'Seuls les fichiers PNG, JPG et JPEG sont acceptés.'
+                        'error': 'Only PNG, JPG and JPEG files are accepted.'
                     })
 
                 # Determine prefix and path according to category
@@ -378,14 +378,14 @@ def administrator_upload(request):
                 return render(request, 'administrator/upload.html', {
                     'marker_files': marker_files,
                     'plan_files': plan_files,
-                    'success': f'Fichier {filename} téléversé avec succès.'
+                    'success': f'File {filename} uploaded successfully.'
                 })
 
             except Exception as e:
                 return render(request, 'administrator/upload.html', {
                     'marker_files': marker_files,
                     'plan_files': plan_files,
-                    'error': f'Erreur lors du téléversement: {str(e)}'
+                    'error': f'Error while uploading: {str(e)}'
                 })
 
     # GET request - simply display the page

@@ -1,24 +1,24 @@
 <!-- administrator/templates/administrator/delete_user.html -->
 {% extends 'administrator/base.html' %}
 
-{% block title %}Supprimer un utilisateur{% endblock %}
+{% block title %}Delete an user{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Supprimer un utilisateur</h2>
+    <h2 class="mb-4">Delete an user</h2>
 
     <div class="card">
         <div class="card-header bg-danger text-white">
-            <h5 class="mb-0">Confirmation de suppression</h5>
+            <h5 class="mb-0">Deletion confirmation</h5>
         </div>
         <div class="card-body">
-            <p>Êtes-vous sûr de vouloir supprimer l'utilisateur "<strong>{{ user.username }}</strong>" ?</p>
-            <p>Cette action est irréversible.</p>
+            <p>Are you sure you want to delete the user? "<strong>{{ user.username }}</strong>" ?</p>
+            <p>This action is irreversible.</p>
 
             <form method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
-                <a href="{% url 'administrator-users' %}" class="btn btn-secondary">Annuler</a>
+                <button type="submit" class="btn btn-danger">Confirm deletion</button>
+                <a href="{% url 'administrator-users' %}" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
     </div>

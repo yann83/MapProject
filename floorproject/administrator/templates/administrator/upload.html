@@ -2,7 +2,7 @@
 {% extends 'administrator/base.html' %}
 {% load static %}
 
-{% block title %}Gestion des Fichiers{% endblock %}
+{% block title %}Files management{% endblock %}
 
 {% block css %}
 <style>
@@ -50,7 +50,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Gestion des Fichiers</h2>
+    <h2 class="mb-4">Files management</h2>
 
     <!-- Messages d'alerte -->
     {% if success %}
@@ -63,19 +63,19 @@
 
     <!-- Formulaire d'upload -->
     <div class="upload-container">
-        <h4>Téléverser un fichier</h4>
+        <h4>Upload a file</h4>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="mb-3">
-                <label for="imageInput" class="form-label">Fichier image (PNG, JPG, JPEG)</label>
+                <label for="imageInput" class="form-label">Image file (PNG, JPG, JPEG)</label>
                 <input type="file" class="form-control" id="imageInput" name="image" accept=".png,.jpg,.jpeg" required>
             </div>
             <div class="mb-3">
-                <label class="form-label">Catégorie</label>
+                <label class="form-label">Category</label>
                 <div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="category" id="categoryMarker" value="marker" checked>
-                        <label class="form-check-label" for="categoryMarker">Marqueur (prefix: marker-)</label>
+                        <label class="form-check-label" for="categoryMarker">Marker (prefix: marker-)</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="category" id="categoryPlan" value="plan">
@@ -83,10 +83,10 @@
                     </div>
                 </div>
                 <small class="form-text text-muted">
-                    Les marqueurs sont stockés dans /static/markers, les plans dans /static/plans
+                    Markers are stored in /static/markers, plans in /static/plans
                 </small>
             </div>
-            <button type="submit" class="btn btn-primary">Téléverser</button>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
     </div>
 
@@ -96,7 +96,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Marqueurs ({{ marker_files|length }})</h5>
+                    <h5>Markers ({{ marker_files|length }})</h5>
                 </div>
                 <div class="card-body files-container">
                     {% if marker_files %}
@@ -107,12 +107,12 @@
                                 <span>{{ file }}</span>
                             </div>
                             <button class="btn btn-sm btn-danger delete-btn" data-category="marker" data-filename="{{ file }}">
-                                Supprimer
+                                Delete
                             </button>
                         </div>
                         {% endfor %}
                     {% else %}
-                        <p class="text-muted">Aucun marqueur disponible</p>
+                        <p class="text-muted">No markers available</p>
                     {% endif %}
                 </div>
             </div>
@@ -133,12 +133,12 @@
                                 <span>{{ file }}</span>
                             </div>
                             <button class="btn btn-sm btn-danger delete-btn" data-category="plan" data-filename="{{ file }}">
-                                Supprimer
+                                Delete
                             </button>
                         </div>
                         {% endfor %}
                     {% else %}
-                        <p class="text-muted">Aucun plan disponible</p>
+                        <p class="text-muted">No plans available</p>
                     {% endif %}
                 </div>
             </div>
@@ -149,7 +149,7 @@
 
 {% block script %}
 <script>
-    // Fonction pour obtenir le token CSRF
+    // Function to get the CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -165,24 +165,24 @@
         return cookieValue;
     }
 
-    // Attendre que le DOM soit chargé
+    // Wait for the DOM to load
     document.addEventListener('DOMContentLoaded', function() {
-        // Ajouter un gestionnaire d'événements pour tous les boutons de suppression
+        // Add an event handler for all delete buttons
         document.querySelectorAll('.delete-btn').forEach(function(button) {
             button.addEventListener('click', function() {
-                if (confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?')) {
+                if (confirm('Are you sure you want to delete this file? ?')) {
                     const category = this.getAttribute('data-category');
                     const filename = this.getAttribute('data-filename');
                     const fileItem = this.closest('.file-item');
 
-                    // Créer les données à envoyer
+                    // Create the data to send
                     const formData = new FormData();
                     formData.append('delete', 'true');
                     formData.append('category', category);
                     formData.append('filename', filename);
                     formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
 
-                    // Envoyer la requête AJAX
+                    // Send AJAX request
                     fetch(window.location.href, {
                         method: 'POST',
                         headers: {
@@ -193,10 +193,10 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            // Supprimer l'élément de la liste
+                            // Remove item from list
                             fileItem.remove();
 
-                            // Afficher un message de succès
+                            // Display a success message
                             const alertDiv = document.createElement('div');
                             alertDiv.className = 'alert alert-success';
                             alertDiv.textContent = data.message;
@@ -204,20 +204,20 @@
                             const container = document.querySelector('.container');
                             container.insertBefore(alertDiv, container.firstChild);
 
-                            // Faire disparaître l'alerte après 3 secondes
+                            // Dismiss alert after 3 seconds
                             setTimeout(() => {
                                 alertDiv.style.transition = 'opacity 1s';
                                 alertDiv.style.opacity = '0';
                                 setTimeout(() => alertDiv.remove(), 1000);
                             }, 3000);
                         } else {
-                            // Afficher un message d'erreur
-                            alert('Erreur: ' + data.message);
+                            // Display an error message
+                            alert('Error: ' + data.message);
                         }
                     })
                     .catch(error => {
-                        console.error('Erreur:', error);
-                        alert('Une erreur est survenue lors de la suppression du fichier.');
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the file.');
                     });
                 }
             });

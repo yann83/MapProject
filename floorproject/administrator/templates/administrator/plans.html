@@ -16,7 +16,7 @@
         max-width: 100%;
         max-height: 100%;
     }
-    /* Style pour le champ de coordonnées */
+    /* Style for the coordinate field */
     .coordinates-input {
         margin-top: 15px;
         padding: 8px;
@@ -32,25 +32,25 @@
 <p>PLANS</p>
 <div id="map" style="width: 1000px; height: 600px;" class="container px-5 leaflet-container"></div>
 
-<!-- Champ pour afficher les coordonnées -->
+<!-- Field to display contact details -->
 <div class="mt-3">
-    <input type="text" id="coordinates" class="coordinates-input" readonly placeholder="Cliquez sur la carte pour afficher les coordonnées" />
+    <input type="text" id="coordinates" class="coordinates-input" readonly placeholder="Click on the map to view the coordinates" />
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
-    // Variable pour stocker le chemin statique de base pour les images
+    // Variable to store the base static path for images
     const STATIC_URL_PLANS = "{% static 'plans/' %}";
     const STATIC_URL_JSON = "{% static 'json/' %}";
 
-    // Charger le fichier JSON
+    // Load the JSON file
     fetch(STATIC_URL_JSON + "maps.json")
         .then(response => response.json())
         .then(data => {
-            console.log("Données JSON chargées:", data);
+            console.log("JSON data loaded:", data);
 
-            // Créer les couches pour les différents étages
+            // Create the layers for the different floors
             const layers = {};
             if (data.plans) {
                 Object.entries(data.plans).forEach(([key, plan]) => {
@@ -59,7 +59,7 @@
                 });
             }
 
-            // Initialiser la carte
+            // Initialize the map
             const map = L.map('map', {
                 crs: L.CRS.Simple,
                 minZoom: data.map.minZoom || -5,
@@ -68,36 +68,36 @@
                 layers: [layers[data.map.layers]]
             });
 
-            // Configurer la vue
+            // Configure the view
             map.setView([data.map.xy[0], data.map.xy[1]], data.map.z);
             map.fitBounds(data.bounds);
 
-            // Ajouter les contrôles de couches
+            // Add Layer Controls
             const baseMaps = {};
             Object.entries(data.plans).forEach(([key, plan]) => {
                 baseMaps[plan.name] = layers[key];
             });
             L.control.layers(baseMaps).addTo(map);
 
-            // Référence à l'élément input pour les coordonnées
+            // Reference to the input element for coordinates
             const coordinatesInput = document.getElementById('coordinates');
 
-            // Événement de clic pour obtenir les coordonnées
+            // Click event to get coordinates
             map.on('click', function(e) {
                 // Arrondir les coordonnées
                 const lat = Math.round(e.latlng.lat);
                 const lng = Math.round(e.latlng.lng);
 
-                // Afficher dans la console (utile pour le développement)
+                // Display in console (useful for development)
                 console.log('[' + lat + ', ' + lng + ']');
 
-                // Mettre à jour le champ input avec les coordonnées
+                // Update the input field with the coordinates
                 coordinatesInput.value = '[' + lat + ', ' + lng + ']';
             });
         })
         .catch(error => {
-            console.error("Erreur lors du chargement du JSON:", error);
-            document.getElementById("map").innerHTML = "Erreur de chargement de la carte. Consultez la console pour plus de détails.";
+            console.error("Error loading JSON:", error);
+            document.getElementById("map").innerHTML = "Error loading map. Check console for details.";
         });
 </script>
 {% endblock %}
