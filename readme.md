@@ -2,6 +2,10 @@
 
 ![Static Badge](https://img.shields.io/badge/status-b%C3%AAta-orange)
 
+A small gesture, a big support! Buy me a coffee ☕ if you appreciate my work. Thanks in advance!
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/yann83)
+
 ## Changes
 
 __04 May 2025__ <br>
